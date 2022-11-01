@@ -1,5 +1,4 @@
-
-import {Bodies, Composite, Body, World} from "matter-js";
+type Context2D = CanvasRenderingContext2D;
 
 class GameState<User> {
 
@@ -52,15 +51,15 @@ class GameState<User> {
     const width = this.size[0] / 32;
     const height = this.size[1] / 4;
     return new Map([
-      [this.players[0], new Paddle([0, y], [width, height])],
-      [this.players[1], new Paddle([this.size[0], y], [width, height])]
+      [this.players[0], new Paddle([0, y], [width, height], false)],
+      [this.players[1], new Paddle([this.size[0], y], [width, height], true)]
     ]);
   }
 
   private createBall(): Ball {
     const x = this.size[0] / 2;
     const y = this.size[1] / 2;
-    return new Ball([x, y], Math.min(x, y) / 64);
+    return new Ball([x, y], Math.min(x, y) / 32);
   }
 
   movePaddle(player: User, y: number): GameState<User> {
@@ -76,55 +75,140 @@ class GameState<User> {
     return this;
   }
 
-  tick(): GameState<User> {
+  tick(delta: number): GameState<User> {
     // TODO: advance the game by one step
-    this.balls.forEach(ball => ball.tick());
+    this.balls.forEach(ball => ball.tick(delta));
+    Array.from(this.paddles.values()).forEach(paddle => {
+      this.balls.forEach(ball => paddle.collideWith(ball))
+    });
     return this;
   }
 
-  render(): ImageData {
-    return new ImageData(64 * 2, 64 * 2);
+  render(context: Context2D): void {
+    context.fillStyle = 'black';
+    context.fillRect(0, 0, this.size[0], this.size[1]);
+    Array.from(this.paddles.values()).forEach(paddle => paddle.render(context));
+    this.balls.forEach(ball => ball.render(context));
   }
 
 }
 
 interface Entity {
 
-  addTo(world: World): void;
-  tick(): Entity;
+  tick(delta: number): Entity;
+
+  render(ctx: Context2D): void;
 
 }
 
-class Entity2D implements Entity {
+abstract class Entity2D implements Entity {
 
-  private readonly body: Body;
+  protected position: Vec;
 
-  constructor(body: Body) {
-    this.body = body;
+  constructor(position: Vec) {
+    this.position = position;
   }
 
-  addTo(world: World): void {
-    Composite.add(world, this.body);
-  }
-
-  tick(): Entity {
+  tick(_delta: number): Entity {
     return this;
+  }
+
+  abstract render(ctx: Context2D): void;
+
+  static addVectors(vec1: Vec, vec2: Vec): Vec {
+    return [vec1[0] + vec2[0], vec1[1] + vec2[1]];
+  }
+
+  static multiplyVec(vec: Vec, scalar: number): Vec {
+    return [vec[0] * scalar, vec[1] * scalar];
   }
 
 }
 
 class Paddle extends Entity2D {
 
-  constructor(location: Vec, size: Vec) {
-    super(Bodies.rectangle(location[0], location[1], size[0], size[1]));
+  private readonly size: Vec;
+  private readonly side: boolean; // left=false, right=true
+
+  constructor(position: Vec, size: Vec, side: boolean) {
+    super(position);
+    this.size = size;
+    this.side = side;
+  }
+
+  render(ctx: Context2D): void {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(
+      this.position[0] - this.size[0]/2,
+      this.position[1] - this.size[1]/2,
+      this.size[0],
+      this.size[1]
+    );
+  }
+
+  private isCollidingWith(ball: Ball) {
+    if (this.side) { // right
+      return ball.passedXRight(this.position[0] - this.size[0] / 2);
+    }
+    else { // left
+      return ball.passedXLeft(this.position[0] + this.size[0] / 2);
+    }
+  }
+
+  collideWith(ball: Ball) {
+    if (this.isCollidingWith(ball)) {
+      ball.transformVelocity(vel => [
+        vel[0] * -1,
+        vel[1]
+      ]);
+    }
   }
 
 }
 
 class Ball extends Entity2D {
 
-  constructor(location: Vec, radius: number) {
-    super(Bodies.circle(location[0], location[1], radius));
+  private velocity: Vec;
+  private readonly radius: number;
+
+  constructor(position: Vec, radius: number) {
+    super(position);
+    this.velocity = [-0.01, 0];
+    this.radius = radius;
+  }
+
+  render(ctx: Context2D): void {
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(this.position[0], this.position[1], this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    /*
+    ctx.fillRect(
+      this.position[0] - this.radius / 2,
+      this.position[1] - this.radius / 2,
+      this.radius * 2,
+      this.radius * 2
+    )*/
+  }
+
+  tick(delta: number): Entity {
+      this.position = Entity2D.addVectors(
+        this.position,
+        Entity2D.multiplyVec(this.velocity, delta)
+      );
+      return this;
+  }
+
+  passedXLeft(x: number) {
+    return (this.position[0] - this.radius) <= x;
+  }
+
+  passedXRight(x: number) {
+    return (this.position[0] + this.radius) >= x;
+  }
+
+  transformVelocity(transformation: Transform<Vec>): void {
+    this.velocity = transformation(this.velocity);
   }
 
 }
@@ -156,6 +240,7 @@ class Player<User> {
 }
 
 type Vec = readonly [number, number];
+type Transform<T>  = (value: T) => T;
 type Players<User> = readonly [Player<User>, Player<User>];
 
 export default GameState;

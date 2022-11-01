@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { DrawDemo } from './DrawDemo';
+import { Pong } from './pong/Pong';
 
 function App() {
   // const socket = useWebSocket();
@@ -23,6 +24,7 @@ function App() {
         </a>
       </header>
       {/*socket && <DrawDemo socket={socket}/>*/}
+      <Pong/>
     </div>
   );
 }
