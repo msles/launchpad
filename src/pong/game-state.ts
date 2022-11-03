@@ -84,8 +84,8 @@ class GameState<User> {
     this.balls.forEach(ball => ball.checkVerticalBounds(this.size[1]));
     this.balls.forEach(ball => ball.checkVerticalBounds(0));
     //check horizontal bounds based on size of the canvas
-    //this.balls.forEach(ball => ball.checkHorizontalBounds(0));
-    //this.balls.forEach(ball => ball.checkHorizontalBounds(this.size[0]));
+    this.balls.forEach(ball => ball.checkHorizontalBounds(0, this.size[0]));
+    this.balls.forEach(ball => ball.checkHorizontalBounds(this.size[0], this.size[0]));
     return this;
   }
 
@@ -238,16 +238,16 @@ class Ball extends Entity2D {
     }
   }
 
-  checkHorizontalBounds(x: number) {
+  checkHorizontalBounds(x: number, size: number) {
     //score based on which side the ball is on + how to access these variables
     //should we change the velocity to go towards the other player here or somewhere else?
     if (this.position[0] - this.radius <= x){
       //add 1 to player 1 score
-      this.position = [x/2, 32];
+      this.position = [size/2, 32];
     }
     if (this.position[0] + this.radius >= x){
       //add 1 to player 2 score
-      this.position = [x/2, 32];
+      this.position = [size/2, 32];
     }
   }
 
