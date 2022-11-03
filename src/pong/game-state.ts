@@ -81,6 +81,11 @@ class GameState<User> {
     Array.from(this.paddles.values()).forEach(paddle => {
       this.balls.forEach(ball => paddle.collideWith(ball))
     });
+    this.balls.forEach(ball => ball.checkVerticalBounds(this.size[1]));
+    this.balls.forEach(ball => ball.checkVerticalBounds(0));
+    //check horizontal bounds based on size of the canvas
+    //this.balls.forEach(ball => ball.checkHorizontalBounds(0));
+    //this.balls.forEach(ball => ball.checkHorizontalBounds(this.size[0]));
     return this;
   }
 
@@ -137,7 +142,12 @@ class Paddle extends Entity2D {
   }
 
   render(ctx: Context2D): void {
-    ctx.fillStyle = 'white';
+    if (this.side) {
+      ctx.fillStyle = 'red';
+    }
+    else {
+      ctx.fillStyle = 'blue';
+    }
     ctx.fillRect(
       this.position[0] - this.size[0]/2,
       this.position[1] - this.size[1]/2,
@@ -173,12 +183,12 @@ class Ball extends Entity2D {
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [-0.01, 0];
+    this.velocity = [0, 0.01]; //-0.01, 0 to start
     this.radius = radius;
   }
 
   render(ctx: Context2D): void {
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = 'white';
     ctx.beginPath();
     ctx.arc(this.position[0], this.position[1], this.radius, 0, Math.PI * 2);
     ctx.fill();
@@ -211,11 +221,89 @@ class Ball extends Entity2D {
     this.velocity = transformation(this.velocity);
   }
 
+  checkVerticalBounds(y: number) {
+    //lower bound of display
+    if (this.position[1] + this.radius >= y && y != 0){
+    this.transformVelocity(vel => [
+      vel[0],
+      vel[1] * -1
+    ])
+    }
+    //upper bound of display
+    if (this.position[1] - this.radius <= y && y != 64){
+    this.transformVelocity(vel => [
+      vel[0],
+      vel[1] * -1
+    ])
+    }
+  }
+
+  checkHorizontalBounds(x: number) {
+    //score based on which side the ball is on + how to access these variables
+    //should we change the velocity to go towards the other player here or somewhere else?
+    if (this.position[0] - this.radius <= x){
+      //add 1 to player 1 score
+      this.position = [x/2, 32];
+    }
+    if (this.position[0] + this.radius >= x){
+      //add 1 to player 2 score
+      this.position = [x/2, 32];
+    }
+  }
+
 }
 
 // Represents an obstruction on the pong "board"
 interface Obstacle {
 
+}
+class Block extends Entity2D implements Obstacle
+{
+  private readonly size: Vec;
+  private readonly side: boolean;
+
+  constructor(position: Vec, size: Vec, side: boolean) {
+    super(position);
+    this.size = [2, 2];
+    this.side = side;
+  }
+
+  render(ctx: Context2D): void {
+    if (this.side) {
+      ctx.fillStyle = 'red';
+    }
+    else {
+      ctx.fillStyle = 'blue';
+    }
+    ctx.fillRect(
+      //this might be wrong
+      this.position[0] - this.size[0]/2,
+      this.position[1] - this.size[1]/2,
+      this.size[0],
+      this.size[1]
+    );
+  }
+
+  //Not sure about all of this lmk
+  private isCollidingWith(ball: Ball) {
+    if (this.side) { // right
+      return ball.passedXRight(this.position[0] - this.size[0] / 2);
+    }
+    else { // left
+      return ball.passedXLeft(this.position[0] + this.size[0] / 2);
+    }
+  }
+
+  collideWith(ball: Ball) {
+    if (this.isCollidingWith(ball)) {
+      ball.transformVelocity(vel => [
+        vel[0] * -1,
+        vel[1]
+      ]);
+    }
+  }
+
+  //From here should add both forms of collision detection as one function as they can be hit from either side
 }
 
 class Player<User> {
@@ -230,6 +318,7 @@ class Player<User> {
 
   addPoint(): this {
     this.score++;
+    
     return this;
   }
 
