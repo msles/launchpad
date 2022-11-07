@@ -158,10 +158,10 @@ class Paddle extends Entity2D {
 
   private isCollidingWith(ball: Ball) {
     if (this.side) { // right
-      return ball.passedXRight(this.position[0] - this.size[0] / 2);
+      return ball.passedXRight(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2);
     }
     else { // left
-      return ball.passedXLeft(this.position[0] + this.size[0] / 2);
+      return ball.passedXLeft(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2);
     }
   }
 
@@ -183,7 +183,7 @@ class Ball extends Entity2D {
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [0.01, 0.01]; //-0.01, 0 to start
+    this.velocity = [-0.01, -0.0025]; //-0.01, 0 to start
     this.radius = radius;
   }
 
@@ -209,12 +209,13 @@ class Ball extends Entity2D {
       return this;
   }
 
-  passedXLeft(x: number) {
-    return (this.position[0] - this.radius) <= x;
+  //Atempting to change so that it's in line with the paddle and not just its x position (this works for now)
+  passedXLeft(x: number, y: number) {
+    return ((this.position[0] - this.radius) <= x && (this.position[1] >= y && this.position[1] <= (y + 16)));
   }
 
-  passedXRight(x: number) {
-    return (this.position[0] + this.radius) >= x;
+  passedXRight(x: number, y: number) {
+    return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + 16)));
   }
 
   transformVelocity(transformation: Transform<Vec>): void {
@@ -284,7 +285,7 @@ class Block extends Entity2D implements Obstacle
     );
   }
 
-  private isCollidingWithObstacle(ball: Ball) {
+  /*private isCollidingWithObstacle(ball: Ball) {
     if (this.side) { // right
       return ball.passedXRight(this.position[0] - this.size[0] / 2);
     }
@@ -292,6 +293,7 @@ class Block extends Entity2D implements Obstacle
       return ball.passedXLeft(this.position[0] + this.size[0] / 2);
     }
   }
+  
 
   collideWith(ball: Ball) {
     if (this.isCollidingWithObstacle(ball)) {
@@ -301,6 +303,7 @@ class Block extends Entity2D implements Obstacle
       ]);
     }
   }
+  */
 
   //From here should add both forms of collision detection as one function as they can be hit from either side
 
