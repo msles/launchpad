@@ -1,3 +1,10 @@
 div.slider {
-  
+  width: 50%;
+  height: 100%;
+}
+
+div.paddle {
+  background-color: black;
+  width: 10%;
+  height: 25%;
 }
