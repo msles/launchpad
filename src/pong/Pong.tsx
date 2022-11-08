@@ -35,15 +35,8 @@ export function Pong() {
       }
     }
   }, [game]);
-  useEffect(() => {
-    function handleKeyDown() {
-      game.movePaddle("a", 0);
-    }
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [game]);
   return <div className={styles.pong}>
-    <PaddleSlider/>
+    <PaddleSlider height={64} onMove={y => game.movePaddle('a', y)}/>
     <canvas ref={ref} width={64} height={64} style={{width: 64*4, height: 64*4}}/>
   </div>
 }
