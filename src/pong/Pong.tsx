@@ -1,5 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import GameState from "./game-state";
+import { PaddleSlider } from "./PaddleSlider";
+import styles from "./css/Pong.module.css";
 
 export function Pong() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -33,5 +35,15 @@ export function Pong() {
       }
     }
   }, [game]);
-  return <canvas ref={ref} width={64} height={64} style={{width: 64*4, height: 64*4}}/>
+  useEffect(() => {
+    function handleKeyDown() {
+      game.movePaddle("a", 0);
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [game]);
+  return <div className={styles.pong}>
+    <PaddleSlider/>
+    <canvas ref={ref} width={64} height={64} style={{width: 64*4, height: 64*4}}/>
+  </div>
 }

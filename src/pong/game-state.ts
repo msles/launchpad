@@ -28,14 +28,14 @@ class GameState<User> {
   private readonly players: Players<User>;
   private readonly observers: Set<User>;
   private readonly size: Vec;
-  private readonly paddles: Map<Player<User>,Paddle>;
+  private readonly paddles: Map<User,Paddle>;
   private readonly balls: Set<Ball>;
 
   constructor(players: readonly [User, User], observers: Set<User>, size: Vec) {
     this.players = this.createPlayers(players);
     this.observers = observers;
     this.size = size;
-    this.paddles = this.createPaddles();
+    this.paddles = this.createPaddles(players);
     this.balls = new Set([this.createBall()]);
   }
 
@@ -46,13 +46,13 @@ class GameState<User> {
     ];
   }
 
-  private createPaddles(): Map<Player<User>,Paddle> {
+  private createPaddles(players: readonly [User, User]): Map<User,Paddle> {
     const y = this.size[1] / 2;
     const width = this.size[0] / 32;
     const height = this.size[1] / 4;
     return new Map([
-      [this.players[0], new Paddle([5, y], [width, height], false)],
-      [this.players[1], new Paddle([this.size[0] - 5, y], [width, height], true)]
+      [players[0], new Paddle([5, y], [width, height], false)],
+      [players[1], new Paddle([this.size[0] - 5, y], [width, height], true)]
     ]);
   }
 
@@ -62,12 +62,12 @@ class GameState<User> {
     return new Ball([x, y], Math.min(x, y) / 32);
   }
 
-  movePaddle(player: User, y: number): GameState<User> {
-    return this;
+  movePaddle(player: User, y: number): void {
+    this.paddles.get(player)?.move(([x, _]) => [x, y]);
   }
 
-  placeObstacle(obstacle: Obstacle): GameState<User> {
-    return this;
+  placeObstacle(obstacle: Obstacle): void {
+    
   }
 
   mergeGames(otherGame: GameState<User>): GameState<User> {
@@ -115,6 +115,11 @@ abstract class Entity2D implements Entity {
   }
 
   tick(_delta: number): Entity {
+    return this;
+  }
+
+  move(transformation: Transform<Vec>): this {
+    this.position = transformation(this.position);
     return this;
   }
 
