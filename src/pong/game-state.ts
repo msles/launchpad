@@ -30,6 +30,7 @@ class GameState<User> {
   private readonly size: Vec;
   private readonly paddles: Map<User,Paddle>;
   private readonly balls: Set<Ball>;
+  private readonly obstacles: Set<Block>;
 
   constructor(players: readonly [User, User], observers: Set<User>, size: Vec) {
     this.players = this.createPlayers(players);
@@ -37,6 +38,7 @@ class GameState<User> {
     this.size = size;
     this.paddles = this.createPaddles(players);
     this.balls = new Set([this.createBall()]);
+    this.obstacles = new Set([this.createObstacle()]);
   }
 
   private createPlayers(users: readonly [User, User]): Players<User> {
@@ -60,6 +62,10 @@ class GameState<User> {
     const x = this.size[0] / 2;
     const y = this.size[1] / 2;
     return new Ball([x, y], Math.min(x, y) / 32);
+  }
+
+  private createObstacle(): Block {
+    return new Block([16, 32], [8,8], true);
   }
 
   movePaddle(player: User, y: number): void {
@@ -86,6 +92,10 @@ class GameState<User> {
     //check horizontal bounds based on size of the canvas
     this.balls.forEach(ball => ball.checkHorizontalBounds(0, this.size[0]));
     this.balls.forEach(ball => ball.checkHorizontalBounds(this.size[0], this.size[0]));
+    //Check obstacle collision
+    Array.from(this.obstacles.values()).forEach(Block => {
+      this.balls.forEach(ball => Block.collideWithObstacle(ball))
+    });
     return this;
   }
 
@@ -94,6 +104,7 @@ class GameState<User> {
     context.fillRect(0, 0, this.size[0], this.size[1]);
     Array.from(this.paddles.values()).forEach(paddle => paddle.render(context));
     this.balls.forEach(ball => ball.render(context));
+    this.obstacles.forEach(Block => Block.render(context))
   }
 
 }
@@ -163,10 +174,10 @@ class Paddle extends Entity2D {
 
   private isCollidingWith(ball: Ball) {
     if (this.side) { // right
-      return ball.passedXRight(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2);
+      return ball.passedXRight(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
     }
     else { // left
-      return ball.passedXLeft(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2);
+      return ball.passedXLeft(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
     }
   }
 
@@ -188,7 +199,7 @@ class Ball extends Entity2D {
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [-0.01, -0.0025]; //-0.01, 0 to start
+    this.velocity = [0.05, 0]; //-0.01, 0 to start
     this.radius = radius;
   }
 
@@ -215,13 +226,22 @@ class Ball extends Entity2D {
   }
 
   //Atempting to change so that it's in line with the paddle and not just its x position (this works for now)
-  passedXLeft(x: number, y: number) {
-    return ((this.position[0] - this.radius) <= x && (this.position[1] >= y && this.position[1] <= (y + 16)));
+  passedXLeft(x: number, y: number, size: number) {
+    return ((this.position[0] - this.radius) <= x && (this.position[0] - this.radius <= (x + size)) && (this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
-  passedXRight(x: number, y: number) {
-    return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + 16)));
+  passedXRight(x: number, y: number, size: number) {
+    return (this.position[0] + this.radius) >= x && (this.position[0] + this.radius >= (x + size)) && ((this.position[1] >= y && this.position[1] <= (y + size)));
   }
+
+  passedYTop(x: number, y: number, size: number) {
+    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] + this.radius) >= y;
+  }
+
+  passedYBottom(x: number, y: number, size: number) {
+    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] - this.radius) >= y;
+  }
+
 
   transformVelocity(transformation: Transform<Vec>): void {
     this.velocity = transformation(this.velocity);
@@ -270,7 +290,7 @@ class Block extends Entity2D implements Obstacle
 
   constructor(position: Vec, size: Vec, side: boolean) {
     super(position);
-    this.size = [2, 2];
+    this.size = size;
     this.side = side;
   }
 
@@ -290,31 +310,24 @@ class Block extends Entity2D implements Obstacle
     );
   }
 
-  /*private isCollidingWithObstacle(ball: Ball) {
-    if (this.side) { // right
-      return ball.passedXRight(this.position[0] - this.size[0] / 2);
-    }
-    else { // left
-      return ball.passedXLeft(this.position[0] + this.size[0] / 2);
-    }
+  //Will return that it is colliding if it is hit either horizontally or vertically
+  private isCollidingWithObstacle(ball: Ball) {
+    return ball.passedXLeft(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]) ||
+    ball.passedXRight(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+    //ball.passedYBottom(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) || 
+    //ball.passedYTop(this.position[0] + this.size[0] / 2, this.position[1] + this.size[1] / 2, this.size[0])
   }
   
-
-  collideWith(ball: Ball) {
+  //From here should add both forms of collision detection as one function as they can be hit from either side
+  collideWithObstacle(ball: Ball) {
+    //for if left or right is true
     if (this.isCollidingWithObstacle(ball)) {
       ball.transformVelocity(vel => [
         vel[0] * -1,
         vel[1]
       ]);
     }
-  }
-  */
-
-  //From here should add both forms of collision detection as one function as they can be hit from either side
-
-  checkObstacleCollision(ball: Ball) {
-
-  }
+}
 }
 
 class Player<User> {
