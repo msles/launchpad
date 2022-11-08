@@ -5,7 +5,7 @@ import { DrawDemo } from './DrawDemo';
 import { Pong } from './pong/Pong';
 
 function App() {
-  // const socket = useWebSocket();
+  const socket = useWebSocket();
   return (
     <div className="App">
       <header className="App-header">
@@ -23,8 +23,8 @@ function App() {
           Learn React
         </a>
       </header>
-      {/*socket && <DrawDemo socket={socket}/>*/}
-      <Pong/>
+      {socket && <DrawDemo socket={socket}/>}
+      {/*<Pong/>*/}
     </div>
   );
 }
@@ -32,8 +32,31 @@ function App() {
 function useWebSocket(): WebSocket|undefined {
   const [socket, setSocket] = useState<WebSocket|undefined>();
   useEffect(() => {
-    const s = new WebSocket('ws://localhost:8000');
-    s.addEventListener('open', () => setSocket(s));
+    const s = new WebSocket('wss://c4.jamespackard.me');
+    let clearPingInterval = () => {};
+    function onOpen() {
+      setSocket(s);
+      console.debug('WebSocket connection established');
+      const interval = setInterval(() => s.send(JSON.stringify({channel: 'ping'})), 5_000);
+      clearPingInterval = () => clearInterval(interval);
+    }
+    function onClose(event: CloseEvent) {
+      console.debug('WebSocket connection closed');
+      console.debug(event);
+    }
+    function onMessage(event: MessageEvent) {
+      console.debug(event.data);
+    }
+    s.addEventListener('open', onOpen);
+    s.addEventListener('close', onClose);
+    s.addEventListener('message', onMessage);
+    return () => {
+      clearPingInterval();
+      s.removeEventListener('open', onOpen);
+      s.removeEventListener('close', onClose);
+      s.removeEventListener('message', onMessage);
+      s.close();
+    }
   }, []);
   return socket;
 }
