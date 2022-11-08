@@ -51,8 +51,8 @@ class GameState<User> {
     const width = this.size[0] / 32;
     const height = this.size[1] / 4;
     return new Map([
-      [this.players[0], new Paddle([0, y], [width, height], false)],
-      [this.players[1], new Paddle([this.size[0], y], [width, height], true)]
+      [this.players[0], new Paddle([5, y], [width, height], false)],
+      [this.players[1], new Paddle([this.size[0] - 5, y], [width, height], true)]
     ]);
   }
 
@@ -158,10 +158,10 @@ class Paddle extends Entity2D {
 
   private isCollidingWith(ball: Ball) {
     if (this.side) { // right
-      return ball.passedXRight(this.position[0] - this.size[0] / 2);
+      return ball.passedXRight(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2);
     }
     else { // left
-      return ball.passedXLeft(this.position[0] + this.size[0] / 2);
+      return ball.passedXLeft(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2);
     }
   }
 
@@ -183,7 +183,7 @@ class Ball extends Entity2D {
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [0, 0.01]; //-0.01, 0 to start
+    this.velocity = [-0.01, -0.0025]; //-0.01, 0 to start
     this.radius = radius;
   }
 
@@ -209,12 +209,13 @@ class Ball extends Entity2D {
       return this;
   }
 
-  passedXLeft(x: number) {
-    return (this.position[0] - this.radius) <= x;
+  //Atempting to change so that it's in line with the paddle and not just its x position (this works for now)
+  passedXLeft(x: number, y: number) {
+    return ((this.position[0] - this.radius) <= x && (this.position[1] >= y && this.position[1] <= (y + 16)));
   }
 
-  passedXRight(x: number) {
-    return (this.position[0] + this.radius) >= x;
+  passedXRight(x: number, y: number) {
+    return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + 16)));
   }
 
   transformVelocity(transformation: Transform<Vec>): void {
@@ -241,11 +242,11 @@ class Ball extends Entity2D {
   checkHorizontalBounds(x: number, size: number) {
     //score based on which side the ball is on + how to access these variables
     //should we change the velocity to go towards the other player here or somewhere else?
-    if (this.position[0] - this.radius <= x){
+    if (this.position[0] + this.radius <= x && x != 64){
       //add 1 to player 1 score
       this.position = [size/2, 32];
     }
-    if (this.position[0] + this.radius >= x){
+    else if (this.position[0] - this.radius >= x && x != 0){
       //add 1 to player 2 score
       this.position = [size/2, 32];
     }
@@ -284,8 +285,7 @@ class Block extends Entity2D implements Obstacle
     );
   }
 
-  //Not sure about all of this lmk
-  private isCollidingWith(ball: Ball) {
+  /*private isCollidingWithObstacle(ball: Ball) {
     if (this.side) { // right
       return ball.passedXRight(this.position[0] - this.size[0] / 2);
     }
@@ -293,17 +293,23 @@ class Block extends Entity2D implements Obstacle
       return ball.passedXLeft(this.position[0] + this.size[0] / 2);
     }
   }
+  
 
   collideWith(ball: Ball) {
-    if (this.isCollidingWith(ball)) {
+    if (this.isCollidingWithObstacle(ball)) {
       ball.transformVelocity(vel => [
         vel[0] * -1,
         vel[1]
       ]);
     }
   }
+  */
 
   //From here should add both forms of collision detection as one function as they can be hit from either side
+
+  checkObstacleCollision(ball: Ball) {
+
+  }
 }
 
 class Player<User> {
