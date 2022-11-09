@@ -228,18 +228,26 @@ class Ball extends Entity2D {
   //Atempting to change so that it's in line with the paddle and not just its x position (this works for now)
   //I think the velocity check should be enough to distinguish when the checks are active
   passedXLeft(x: number, y: number, size: number) {
-    return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)));
+    return ((this.position[0] - this.radius) <= x && (this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
   passedXRight(x: number, y: number, size: number) {
-    return (this.position[0] + this.radius) >= x && this.velocity[0] > 0 && (this.position[0] + this.radius >= (x + size)) && ((this.position[1] >= y && this.position[1] <= (y + size)));
+    return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
-  passedYTop(x: number, y: number, size: number) {
+  obstHitRightSide(x: number, y: number, size: number) {
+    return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)));
+  }
+
+  obstHitLeftSide(x: number, y: number, size: number) {
+    return (this.position[0] + this.radius) >= x && this.velocity[0] > 0 && ((this.position[1] >= y && this.position[1] <= (y + size)));
+  }
+
+  obstHitTop(x: number, y: number, size: number) {
     return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] + this.radius) >= y && this.velocity[1] > 0;
   }
 
-  passedYBottom(x: number, y: number, size: number) {
+  obstHitBottom(x: number, y: number, size: number) {
     return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] - this.radius) >= y && this.velocity[1] < 0;
   }
 
@@ -313,10 +321,10 @@ class Block extends Entity2D implements Obstacle
 
   //Will return that it is colliding if it is hit either horizontally or vertically
   private isCollidingWithObstacle(ball: Ball) {
-    return ball.passedXLeft(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]) ||
-    ball.passedXRight(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
-    //ball.passedYBottom(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) || 
-    //ball.passedYTop(this.position[0] + this.size[0] / 2, this.position[1] + this.size[1] / 2, this.size[0])
+    return ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+    //ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+    //ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) || 
+    //return ball.obstHitBottom(this.position[0] - this.size[0], this.position[1] + this.size[1] / 2, this.size[0]);
   }
   
   //From here should add both forms of collision detection as one function as they can be hit from either side
