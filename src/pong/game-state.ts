@@ -235,6 +235,7 @@ class Ball extends Entity2D {
     return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
+  //For it to collide it has to satisy these requirements AND be on the right side of the block, or else infinitely collides after one collision
   obstHitRightSide(x: number, y: number, size: number) {
     return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)));
   }
