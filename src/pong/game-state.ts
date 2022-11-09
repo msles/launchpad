@@ -199,7 +199,7 @@ class Ball extends Entity2D {
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [0.05, 0]; //-0.01, 0 to start
+    this.velocity = [-0.01, 0]; //-0.01, 0 to start
     this.radius = radius;
   }
 
@@ -226,20 +226,21 @@ class Ball extends Entity2D {
   }
 
   //Atempting to change so that it's in line with the paddle and not just its x position (this works for now)
+  //I think the velocity check should be enough to distinguish when the checks are active
   passedXLeft(x: number, y: number, size: number) {
-    return ((this.position[0] - this.radius) <= x && (this.position[0] - this.radius <= (x + size)) && (this.position[1] >= y && this.position[1] <= (y + size)));
+    return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
   passedXRight(x: number, y: number, size: number) {
-    return (this.position[0] + this.radius) >= x && (this.position[0] + this.radius >= (x + size)) && ((this.position[1] >= y && this.position[1] <= (y + size)));
+    return (this.position[0] + this.radius) >= x && this.velocity[0] > 0 && (this.position[0] + this.radius >= (x + size)) && ((this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
   passedYTop(x: number, y: number, size: number) {
-    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] + this.radius) >= y;
+    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] + this.radius) >= y && this.velocity[1] > 0;
   }
 
   passedYBottom(x: number, y: number, size: number) {
-    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] - this.radius) >= y;
+    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] - this.radius) >= y && this.velocity[1] < 0;
   }
 
 
