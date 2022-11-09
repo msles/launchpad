@@ -65,7 +65,7 @@ class GameState<User> {
   }
 
   private createObstacle(): Block {
-    return new Block([16, 32], [8,8], true);
+    return new Block([48, 32], [8,8], true);
   }
 
   movePaddle(player: User, y: number): void {
@@ -199,7 +199,7 @@ class Ball extends Entity2D {
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [-0.01, 0]; //-0.01, 0 to start
+    this.velocity = [0.01, 0]; //-0.01, 0 to start
     this.radius = radius;
   }
 
@@ -241,7 +241,7 @@ class Ball extends Entity2D {
   }
 
   obstHitLeftSide(x: number, y: number, size: number) {
-    return (this.position[0] + this.radius) >= x && this.velocity[0] > 0 && ((this.position[1] >= y && this.position[1] <= (y + size)));
+    return (this.position[0] + this.radius) >= x && x > 0 && this.velocity[0] > 0 && ((this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
   obstHitTop(x: number, y: number, size: number) {
@@ -322,8 +322,8 @@ class Block extends Entity2D implements Obstacle
 
   //Will return that it is colliding if it is hit either horizontally or vertically
   private isCollidingWithObstacle(ball: Ball) {
-    return ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
-    //ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+    //return ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]) ||
+    return ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
     //ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) || 
     //return ball.obstHitBottom(this.position[0] - this.size[0], this.position[1] + this.size[1] / 2, this.size[0]);
   }
