@@ -65,7 +65,7 @@ class GameState<User> {
   }
 
   private createObstacle(): Block {
-    return new Block([48, 32], [8,8], true);
+    return new Block([16, 32], [8,8], true);
   }
 
   movePaddle(player: User, y: number): void {
@@ -90,8 +90,8 @@ class GameState<User> {
     this.balls.forEach(ball => ball.checkVerticalBounds(this.size[1]));
     this.balls.forEach(ball => ball.checkVerticalBounds(0));
     //check horizontal bounds based on size of the canvas
-    this.balls.forEach(ball => ball.checkHorizontalBounds(0, this.size[0]));
-    this.balls.forEach(ball => ball.checkHorizontalBounds(this.size[0], this.size[0]));
+    this.balls.forEach(ball => ball.checkHorizontalBounds(0, this.size[0], this.players[0]));
+    this.balls.forEach(ball => ball.checkHorizontalBounds(this.size[0], this.size[0], this.players[1]));
     //Check obstacle collision
     Array.from(this.obstacles.values()).forEach(Block => {
       this.balls.forEach(ball => Block.collideWithObstacle(ball))
@@ -187,6 +187,7 @@ class Paddle extends Entity2D {
         vel[0] * -1,
         vel[1]
       ]);
+      //ball.changeXdir();
     }
   }
 
@@ -196,11 +197,24 @@ class Ball extends Entity2D {
 
   private velocity: Vec;
   private readonly radius: number;
+  private xdir: boolean; //true = left, false = right
+  private ydir: boolean; //true = up, false = down
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [0.01, 0]; //-0.01, 0 to start
+    this.velocity = [-0.01, -0.001]; //-0.01, 0 to start
     this.radius = radius;
+    this.xdir = true;
+    this.ydir = true;
+
+  }
+
+  changeXdir(){
+    return this.xdir = !this.xdir;
+  }
+
+  changeYdir() {
+    return this.ydir = !this.ydir;
   }
 
   render(ctx: Context2D): void {
@@ -237,11 +251,11 @@ class Ball extends Entity2D {
 
   //For it to collide it has to satisy these requirements AND be on the right side of the block, or else infinitely collides after one collision
   obstHitRightSide(x: number, y: number, size: number) {
-    return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)));
+    return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)) && this.xdir == true);
   }
 
   obstHitLeftSide(x: number, y: number, size: number) {
-    return (this.position[0] + this.radius) >= x && x > 0 && this.velocity[0] > 0 && ((this.position[1] >= y && this.position[1] <= (y + size)));
+    return (this.position[0] + this.radius) >= x && x > 0 && this.velocity[0] > 0 && ((this.position[1] >= y && this.position[1] <= (y + size)) && this.xdir == false);
   }
 
   obstHitTop(x: number, y: number, size: number) {
@@ -249,7 +263,7 @@ class Ball extends Entity2D {
   }
 
   obstHitBottom(x: number, y: number, size: number) {
-    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] - this.radius) >= y && this.velocity[1] < 0;
+    return this.position[0] >= x && this.position[0] <= (x + size) && (this.position[1] - this.radius) <= y && this.velocity[1] < 0;
   }
 
 
@@ -274,16 +288,18 @@ class Ball extends Entity2D {
     }
   }
 
-  checkHorizontalBounds(x: number, size: number) {
+  checkHorizontalBounds(x: number, size: number, player: Player<any>) {
     //score based on which side the ball is on + how to access these variables
     //should we change the velocity to go towards the other player here or somewhere else?
     if (this.position[0] + this.radius <= x && x != 64){
       //add 1 to player 1 score
       this.position = [size/2, 32];
+      player.addPoint();
     }
     else if (this.position[0] - this.radius >= x && x != 0){
       //add 1 to player 2 score
       this.position = [size/2, 32];
+      player.addPoint();
     }
   }
 
@@ -322,20 +338,34 @@ class Block extends Entity2D implements Obstacle
 
   //Will return that it is colliding if it is hit either horizontally or vertically
   private isCollidingWithObstacle(ball: Ball) {
-    //return ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]) ||
-    return ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
-    //ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) || 
-    //return ball.obstHitBottom(this.position[0] - this.size[0], this.position[1] + this.size[1] / 2, this.size[0]);
+    return ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+    //ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+    //return ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) ||
+    //ball.obstHitBottom(this.position[0] - this.size[0] / 2, this.position[1] + this.size[1] / 2, this.size[0]);
   }
   
   //From here should add both forms of collision detection as one function as they can be hit from either side
   collideWithObstacle(ball: Ball) {
     //for if left or right is true
-    if (this.isCollidingWithObstacle(ball)) {
+    if (this.isCollidingWithObstacle(ball) && (ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) ||
+    ball.obstHitBottom(this.position[0] - this.size[0] / 2, this.position[1] + this.size[1] / 2, this.size[0]))) {
+      //ball.changeXdir();
+      ball.transformVelocity(vel => [
+        vel[0],
+        vel[1] * -1
+      ]);
+      
+    }
+    //for if top or bottom is true
+    else if (this.isCollidingWithObstacle(ball) && ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]) ||
+    ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1])) {
+      //ball.changeXdir();
       ball.transformVelocity(vel => [
         vel[0] * -1,
         vel[1]
       ]);
+      ball.changeXdir();
+      
     }
 }
 }
