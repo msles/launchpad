@@ -96,6 +96,9 @@ class GameState<User> {
     Array.from(this.obstacles.values()).forEach(Block => {
       this.balls.forEach(ball => Block.collideWithObstacle(ball))
     });
+    if (this.players[0].reachedScore(5) || this.players[1].reachedScore(5)){
+      return this; //join with another game state
+    }
     return this;
   }
 
@@ -251,11 +254,11 @@ class Ball extends Entity2D {
 
   //For it to collide it has to satisy these requirements AND be on the right side of the block, or else infinitely collides after one collision
   obstHitRightSide(x: number, y: number, size: number) {
-    return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)) && this.xdir == true);
+    return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
   obstHitLeftSide(x: number, y: number, size: number) {
-    return (this.position[0] + this.radius) >= x && x > 0 && this.velocity[0] > 0 && ((this.position[1] >= y && this.position[1] <= (y + size)) && this.xdir == false);
+    return (this.position[0] + this.radius) >= x && x > 0 && this.velocity[0] > 0 && ((this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
   obstHitTop(x: number, y: number, size: number) {
@@ -339,8 +342,8 @@ class Block extends Entity2D implements Obstacle
   //Will return that it is colliding if it is hit either horizontally or vertically
   private isCollidingWithObstacle(ball: Ball) {
     return ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
-    //ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
-    //return ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) ||
+    //ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]) ||
+    //ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0]) ||
     //ball.obstHitBottom(this.position[0] - this.size[0] / 2, this.position[1] + this.size[1] / 2, this.size[0]);
   }
   
