@@ -53,8 +53,8 @@ class GameState<User> {
     const width = this.size[0] / 32;
     const height = this.size[1] / 4;
     return new Map([
-      [players[0], new Paddle([5, y], [width, height], false)],
-      [players[1], new Paddle([this.size[0] - 5, y], [width, height], true)]
+      [players[0], new Paddle([1, y], [width, height], false)],
+      [players[1], new Paddle([this.size[0] - 1, y], [width, height], true)]
     ]);
   }
 
@@ -65,7 +65,7 @@ class GameState<User> {
   }
 
   private createObstacle(): Block {
-    return new Block([16, 32], [4,4], true);
+    return new Block([48, 32], [4,4], true);
   }
 
   movePaddle(player: User, y: number): void {
@@ -177,10 +177,10 @@ class Paddle extends Entity2D {
 
   private isCollidingWith(ball: Ball) {
     if (this.side) { // right
-      return ball.passedXRight(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+      return ball.rightPaddleCollision(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
     }
     else { // left
-      return ball.passedXLeft(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+      return ball.leftPaddleCollision(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
     }
   }
 
@@ -205,19 +205,11 @@ class Ball extends Entity2D {
 
   constructor(position: Vec, radius: number) {
     super(position);
-    this.velocity = [0.014, .055]; //-0.01, 0 to start
+    this.velocity = [-0.014, -.011]; //-0.01, 0 to start
     this.radius = radius;
     this.xdir = true;
     this.ydir = true;
 
-  }
-
-  changeXdir(){
-    return this.xdir = !this.xdir;
-  }
-
-  changeYdir() {
-    return this.ydir = !this.ydir;
   }
 
   render(ctx: Context2D): void {
@@ -244,15 +236,15 @@ class Ball extends Entity2D {
 
   //Atempting to change so that it's in line with the paddle and not just its x position (this works for now)
   //I think the velocity check should be enough to distinguish when the checks are active
-  passedXLeft(x: number, y: number, size: number) {
+  leftPaddleCollision(x: number, y: number, size: number) {
     return ((this.position[0] - this.radius) <= x && (this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
-  passedXRight(x: number, y: number, size: number) {
+  rightPaddleCollision(x: number, y: number, size: number) {
     return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + size)));
   }
 
-  //For it to collide it has to satisy these requirements AND be on the right side of the block, or else infinitely collides after one collision
+  //For it to collide it has to satisfy these requirements AND be on the right side of the block, or else infinitely collides after one collision
   obstHitRightSide(x: number, y: number, size: number, opposite: number) {
     return ((this.position[0] - this.radius) <= x && this.velocity[0] < 0 && (this.position[1] >= y && this.position[1] <= (y + size)) && (this.position[0] > opposite));
   }
@@ -324,11 +316,11 @@ class Block extends Entity2D implements Obstacle
   }
 
   render(ctx: Context2D): void {
-    if (this.side) {
-      ctx.fillStyle = 'red';
+    if (this.position[0] <= 32 ) {
+      ctx.fillStyle = 'blue';
     }
     else {
-      ctx.fillStyle = 'blue';
+      ctx.fillStyle = 'red';
     }
     ctx.fillRect(
       //this might be wrong
@@ -367,8 +359,6 @@ class Block extends Entity2D implements Obstacle
         vel[0] * -1,
         vel[1]
       ]);
-      ball.changeXdir();
-      
     }
 }
 }
