@@ -9,7 +9,7 @@ function App() {
   return (
    <div>
       {/*socket && <DrawDemo socket={socket}/>*/}
-      <Pong/>
+      {socket && <Pong socket={socket}/>}
     </div>
   );
 }
