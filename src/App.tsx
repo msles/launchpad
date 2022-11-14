@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { DrawDemo } from './DrawDemo';
-import { Pong } from './pong/Pong';
+import { DrawDemo } from './components/DrawDemo';
+import { Pong } from './components/pong/Pong';
 
-function App() {
-  const socket = useWebSocket();
-  return (
-   <div>
-      {/*socket && <DrawDemo socket={socket}/>*/}
-      {socket && <Pong socket={socket}/>}
-    </div>
-  );
-}
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoginPage from './components/LoginPage';
+import AdminPage from './components/adminPages/AdminPage';
+import DrawAdmin from './components/adminPages/DrawAdmin';
+import LayoutAdmin from './components/adminPages/LayoutAdmin';
+import PongAdmin from './components/adminPages/PongAdmin';
+import DrawGuest from './components/guestPages/DrawGuest';
+import GuestPage from './components/guestPages/GuestPage';
+import LayoutGuest from './components/guestPages/LayoutGuest';
+import PongGuest from './components/guestPages/PongGuest';
+
 
 function useWebSocket(): WebSocket|undefined {
   const [socket, setSocket] = useState<WebSocket|undefined>();
@@ -44,6 +45,31 @@ function useWebSocket(): WebSocket|undefined {
     }
   }, []);
   return socket;
+}
+
+
+function App() {
+  const socket = useWebSocket();
+  return (
+    <>
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+
+        <Route path="/adminPage" element={<AdminPage />} />
+        <Route path="/layoutAdmin" element={<LayoutAdmin />} />
+        <Route path="/drawAdmin" element={<DrawAdmin />} />
+        <Route path="/pongAdmin" element={<PongAdmin />} />
+        
+        <Route path="/guestPage" element={<GuestPage />} />
+        <Route path="/layoutGuest" element={<LayoutGuest />} />
+        <Route path="/drawGuest" element={<DrawGuest />} />
+        <Route path="/pongGuest" element={<PongGuest />} />
+          
+      </Routes>
+      </BrowserRouter>
+      </>
+  );
 }
 
 export default App;

@@ -105,12 +105,9 @@ class GameState<User> {
   render(context: Context2D): void {
     context.fillStyle = 'black';
     context.fillRect(0, 0, this.size[0], this.size[1]);
-    context.fillStyle = 'white';
-    context.fillText(this.players[0].getScore(), 13, 10, 6);
-    context.fillText(this.players[1].getScore(), 45, 10, 6);
     Array.from(this.paddles.values()).forEach(paddle => paddle.render(context));
     this.balls.forEach(ball => ball.render(context));
-    this.obstacles.forEach(Block => Block.render(context));
+    this.obstacles.forEach(Block => Block.render(context))
   }
 
 }
@@ -378,17 +375,13 @@ class Player<User> {
 
   addPoint(): this {
     this.score++;
+    
     return this;
   }
 
   reachedScore(minScore: number): boolean {
     return this.score >= minScore;
   }
-
-  getScore() {
-    return this.score.toString();
-  }
-
 
 }
 
