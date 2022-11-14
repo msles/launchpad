@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { DrawDemo } from './DrawDemo';
-import { Pong } from './pong/Pong';
+import { DrawDemo } from './components/DrawDemo';
+import { Pong } from './components/pong/Pong';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './components/LoginPage';

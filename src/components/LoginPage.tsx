@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import React, { useState, useEffect } from 'react';
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
@@ -10,14 +11,9 @@ import { auth } from "../config";
 import { Link, useNavigate } from 'react-router-dom';
 import { User as FirebaseUser } from "firebase/auth";
 
-import Form from 'react-bootstrap/Form';
-
 function App() {
-
-  //const [user, setUser] = useSessionStorage('user', null);
   
   const [user, setUser] = useState<FirebaseUser | null>(null);
-
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginGuest, setGuest] = useState("");
@@ -53,7 +49,7 @@ function App() {
       const user = await signInAnonymously(
         auth
       );
-      updateProfile(user.user, {displayName: loginGuest})
+      void updateProfile(user.user, {displayName: loginGuest});
       console.log(user);
       navigate("/guestPage")
     } catch (e) {
