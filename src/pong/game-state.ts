@@ -178,12 +178,13 @@ class Paddle extends Entity2D {
     );
   }
 
+  //Hoping to rectify the middle bouncing w this, got rid of + (left)/-(right) this.size/2 if that doesn't work put it back
   private isCollidingWith(ball: Ball) {
     if (this.side) { // right
-      return ball.rightPaddleCollision(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+      return ball.rightPaddleCollision(this.position[0], this.position[1] - this.size[1] / 2, this.size[1]);
     }
     else { // left
-      return ball.leftPaddleCollision(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1]);
+      return ball.leftPaddleCollision(this.position[0], this.position[1] - this.size[1] / 2, this.size[1]);
     }
   }
 
