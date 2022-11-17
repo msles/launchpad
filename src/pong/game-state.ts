@@ -87,8 +87,8 @@ class GameState<User> {
     Array.from(this.paddles.values()).forEach(paddle => {
       this.balls.forEach(ball => paddle.collideWith(ball))
     });
-    this.balls.forEach(ball => ball.checkVerticalBounds(this.size[1]));
-    this.balls.forEach(ball => ball.checkVerticalBounds(0));
+    this.balls.forEach(ball => ball.checkVerticalBounds(this.size[1], this.size[1]));
+    this.balls.forEach(ball => ball.checkVerticalBounds(0, this.size[1]));
     //check horizontal bounds based on size of the canvas
     this.balls.forEach(ball => ball.checkHorizontalBounds(0, this.size[0], this.players[0]));
     this.balls.forEach(ball => ball.checkHorizontalBounds(this.size[0], this.size[0], this.players[1]));
@@ -269,7 +269,8 @@ class Ball extends Entity2D {
     this.velocity = transformation(this.velocity);
   }
 
-  checkVerticalBounds(y: number) {
+  //added size to bounds
+  checkVerticalBounds(y: number, size: number) {
     //lower bound of display
     if (this.position[1] + this.radius >= y && y != 0){
     this.transformVelocity(vel => [
@@ -278,7 +279,7 @@ class Ball extends Entity2D {
     ])
     }
     //upper bound of display
-    if (this.position[1] - this.radius <= y && y != 64){
+    if (this.position[1] - this.radius <= y && y != size){
     this.transformVelocity(vel => [
       vel[0],
       vel[1] * -1
@@ -289,7 +290,7 @@ class Ball extends Entity2D {
   checkHorizontalBounds(x: number, size: number, player: Player<any>) {
     //score based on which side the ball is on + how to access these variables
     //should we change the velocity to go towards the other player here or somewhere else?
-    if (this.position[0] + this.radius <= x && x != 64){
+    if (this.position[0] + this.radius <= x && x != size){
       //add 1 to player 1 score
       this.position = [size/2, 32];
       player.addPoint();
@@ -347,7 +348,6 @@ class Block extends Entity2D implements Obstacle
     //for if left or right is true
     if (this.isCollidingWithObstacle(ball) && (ball.obstHitTop(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[0], this.position[1] + this.size[1] / 2) ||
     ball.obstHitBottom(this.position[0] - this.size[0] / 2, this.position[1] + this.size[1] / 2, this.size[0], this.position[1] - this.size[1] / 2))) {
-      //ball.changeXdir();
       ball.transformVelocity(vel => [
         vel[0],
         vel[1] * -1
@@ -357,13 +357,18 @@ class Block extends Entity2D implements Obstacle
     //for if top or bottom is true
     else if (this.isCollidingWithObstacle(ball) && ball.obstHitRightSide(this.position[0] + this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1], this.position[0] - this.size[0] / 2) ||
     ball.obstHitLeftSide(this.position[0] - this.size[0] / 2, this.position[1] - this.size[1] / 2, this.size[1], this.position[0] + this.size[0] / 2)) {
-      //ball.changeXdir();
       ball.transformVelocity(vel => [
         vel[0] * -1,
         vel[1]
       ]);
     }
 }
+
+//return position values for obst in upper left corner (so you can like do vec[0] * size, vec[1] * size for display. size is constant so no need to pass it to display) 
+returnObstValues(): Vec {
+  return [this.position[0] - this.position[0] / 2, this.position[1] - this.position[1] / 2];   
+}
+
 }
 
 class Player<User> {
