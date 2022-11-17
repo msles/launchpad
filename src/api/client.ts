@@ -2,14 +2,16 @@ export class Client {
 
   private readonly socket: WebSocket;
   private readonly modes: Map<string|undefined, Mode>;
-  private readonly stopListening: () => void;
+  private readonly cleanup: () => void;
 
   constructor(socket: WebSocket) {
     this.socket = socket;
     this.modes = new Map();
-    const messageHandler = (message: MessageEvent<string>) => this.onMessage(message)
+    const messageHandler = (message: MessageEvent<string>) => this.onMessage(message);
     this.socket.addEventListener('message', messageHandler);
-    this.stopListening = () => this.socket.removeEventListener('message', messageHandler);
+    this.cleanup = () => {
+      this.socket.removeEventListener('message', messageHandler);
+    }
   }
 
   private onMessage(msg: MessageEvent<string>) {
@@ -18,7 +20,7 @@ export class Client {
     mode.channel(channel).emit(message);
   }
 
-  send(message: unknown, channel: string, mode?: string) {
+  private send(message: unknown, channel: string, mode?: string) {
     this.socket.send(JSON.stringify({mode, channel, message}));
   }
 
@@ -34,7 +36,7 @@ export class Client {
   }
 
   stop() {
-    this.stopListening();
+    this.cleanup();
   }
 
   channel<T>(name: string): Channel<T> {
@@ -44,7 +46,6 @@ export class Client {
 }
 
 type MessageListener<T> = (message: T) => void;
-
 
 class Channel<T> {
 
