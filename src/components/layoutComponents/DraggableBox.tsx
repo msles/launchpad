@@ -1,62 +1,40 @@
-import Draggable from 'react-draggable';
-import React, { useState } from 'react';
+import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
+import React, { useEffect, useState } from 'react';
+import { DisplayPosition, Position } from '../../context/LayoutContext';
 
-type stateType = {
-  deltaPosition: {x: number, y: number, isFixed: boolean}
+interface DraggableBoxProps extends DisplayPosition {
+  onChange: (position: Position) => void
 }
 
-
-function DraggableBox(props: stateType) {
-
-    const dragStateStart: stateType = {
-        deltaPosition: {
-          x: props.deltaPosition.x, y: props.deltaPosition.y, isFixed: props.deltaPosition.isFixed
-        }
-      };
-
-    const [dragState, setDragState] = useState(dragStateStart);
+function DraggableBox(props: DraggableBoxProps) {
     
-    const handleDrag = (e: any, pos: { deltaX: number; deltaY: number; }) => {
-        const {x, y} = dragState.deltaPosition;
-        setDragState({
-          deltaPosition: {
-            x: x + pos.deltaX,
-            y: y + pos.deltaY,
-            isFixed: false
-          }
-        });
-    };
+  const [editedPosition, setEditedPosition] = useState<Position>([0, 0]);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
-    return (
-      <Draggable bounds="parent" onDrag={handleDrag} positionOffset={{x: props.deltaPosition.x, y: props.deltaPosition.y}}>
+  const position = isEditing ? editedPosition : props.position;
+
+  const handleStart = (_: DraggableEvent, data: DraggableData) => {
+    setEditedPosition([data.x, data.y]);
+    setIsEditing(true);
+  }
+
+  const handleDrag = (_: DraggableEvent, pos: { x: number, y: number }) => {
+    setEditedPosition([pos.x, pos.y]);
+  };
+
+  const handleStop = (_: DraggableEvent) => {
+    props.onChange(editedPosition);
+    setTimeout(() => {
+      setIsEditing(false);
+    }, 500);
+  }
+
+    return <Draggable bounds="parent" onStart={handleStart} onDrag={handleDrag} onStop={handleStop} position={{x: position[0], y: position[1]}}>
           <div className="box border border-dark " style={{height: '100px', width: '100px', position: 'absolute'}}> 
-              <div>x: {dragState.deltaPosition.x.toFixed(0)}, y: {dragState.deltaPosition.y.toFixed(0)}
+              <div>x: {position[0].toFixed(0)}, y: {position[1].toFixed(0)}
               </div>
           </div>
     </Draggable>
-    )
-
-    /* if (props.deltaPosition.isFixed) {
-      return (
-        <Draggable bounds="parent" onDrag={handleDrag} position={{x: props.deltaPosition.x, y: props.deltaPosition.y}}>
-            <div className="box border border-dark " style={{height: '100px', width: '100px', position: 'absolute'}}> 
-                <div>x: {dragState.deltaPosition.x.toFixed(0)}, y: {dragState.deltaPosition.y.toFixed(0)}
-                </div>
-            </div>
-      </Draggable>
-      )
-    } else {
-      return (
-        <Draggable bounds="parent" onDrag={handleDrag} positionOffset={{x: props.deltaPosition.x, y: props.deltaPosition.y}}>
-            <div className="box border border-dark " style={{height: '100px', width: '100px', position: 'absolute'}}> 
-                <div>x: {dragState.deltaPosition.x.toFixed(0)}, y: {dragState.deltaPosition.y.toFixed(0)}
-                </div>
-            </div>
-      </Draggable>
-      )
-    } */
-
-    
 }
 
 
