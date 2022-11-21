@@ -16,7 +16,7 @@ import PongGuest from './components/guestPages/PongGuest';
 import { LayoutProvider } from './context/LayoutContext';
 
 function App() {
-  const client = useClient();
+  const [client] = useClient();
   return client ?
     <LayoutProvider client={client}>
       <BrowserRouter>
