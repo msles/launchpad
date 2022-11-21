@@ -14,11 +14,14 @@ import GuestPage from './components/guestPages/GuestPage';
 import LayoutGuest from './components/guestPages/LayoutGuest';
 import PongGuest from './components/guestPages/PongGuest';
 import { LayoutProvider } from './context/LayoutContext';
+import { useCurrentMode } from './api/hooks/useCurrentMode';
 
 function App() {
-  const [client] = useClient();
-  return client ?
+  const [client, connected] = useClient();
+  // const mode = useCurrentMode(client);
+  return connected ?
     <LayoutProvider client={client}>
+      {/* <p>Mode: {mode}</p> */}
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
