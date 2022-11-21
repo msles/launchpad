@@ -1,22 +1,39 @@
 import { Observable, Subject } from "rxjs";
 import { Layout } from "./layout";
+import { ModeType } from "./mode";
 
-export class Client {
+export interface Client {
+
+  readonly layout: Observable<Layout>;
+  readonly currentMode: Observable<ModeType>
+
+  mode(name: string|undefined): Mode;
+  channel<T>(name: string): Channel<T>;
+  stop(): void;
+
+}
+
+export class WebClient implements Client {
 
   private readonly socket: WebSocket;
   private readonly modes: Map<string|undefined, Mode>;
   private readonly cleanup: () => void;
   public readonly layout: Observable<Layout>;
+  public readonly currentMode: Observable<ModeType>
 
   constructor(socket: WebSocket) {
     this.socket = socket;
     this.modes = new Map();
+    const modeSubject = new Subject<ModeType>();
     const layoutSubject = new Subject<Layout>();
+    const unsubscribeMode = this.channel<ModeType>('mode').subscribe(name => modeSubject.next(name));
     const unsubscribeLayout = this.channel<Layout>('layout').subscribe(layout => layoutSubject.next(layout));
     this.layout = layoutSubject;
+    this.currentMode = modeSubject;
     const messageHandler = (message: MessageEvent<string>) => this.onMessage(message);
     this.socket.addEventListener('message', messageHandler);
     this.cleanup = () => {
+      unsubscribeMode();
       unsubscribeLayout();
       this.socket.removeEventListener('message', messageHandler);
     }
@@ -29,7 +46,9 @@ export class Client {
   }
 
   private send(message: unknown, channel: string, mode?: string) {
-    this.socket.send(JSON.stringify({mode, channel, message}));
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify({mode, channel, message}));
+    }
   }
 
   mode(name: string|undefined): Mode {
@@ -105,6 +124,25 @@ class Mode {
       this.channels.set(name, channel);
       return channel as Channel<T>;
     }
+  }
+
+}
+
+export class DisconnectedClient implements Client {
+
+  currentMode: Observable<ModeType> = new Subject();
+  layout: Observable<Layout> = new Subject();
+
+  mode(): Mode {
+    return new Mode(() => {})
+  }
+
+  channel<T>(): Channel<T> {
+      return new Channel(() => {});
+  }
+
+  stop(): void {
+    // nothing to do
   }
 
 }

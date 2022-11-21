@@ -1,20 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
-import { Client } from "../client";
+import { Client, WebClient, DisconnectedClient } from "../client";
 
-export function useClient(): readonly [Client|undefined, boolean] {
+export function useClient(): readonly [Client, boolean] {
   const [connected, setConnected] = useState<boolean>(false);
-  const [client, setClient] = useState<Client|undefined>(undefined);
+  const [client, setClient] = useState<Client>(new DisconnectedClient());
   useEffect(() => {
-    const controller = new WebSocketRetry('wss://c4.jamespackard.me', socket => {
-      if (socket) {
-        setClient(new Client(socket));
-      }
-      else {
-        setClient(undefined);
-        setConnected(false);
-      }
-    }, 5_000);
+    const controller = new WebSocketRetry(
+      'wss://c4.jamespackard.me',
+      socket => setClient(new WebClient(socket)),
+      5_000
+    );
     controller.onOpen(() => setConnected(true));
+    controller.onClose(() => setConnected(false));
     controller.start();
     return () => controller.stop();
   }, []);
@@ -29,17 +26,19 @@ export function useClient(): readonly [Client|undefined, boolean] {
 class WebSocketRetry {
 
   private readonly url: string;
-  private readonly onSocket: (socket?: WebSocket) => void;
+  private readonly onSocket: (socket: WebSocket) => void;
   private readonly retryDelay: number;
   private cleanupFns: VoidFn[];
   private readonly openListeners: Set<VoidFn>;
+  private readonly closeListeners: Set<VoidFn>;
 
-  constructor(url: string, onSocket: (socket?: WebSocket) => void, retryDelay: number) {
+  constructor(url: string, onSocket: (socket: WebSocket) => void, retryDelay: number) {
     this.url = url;
     this.onSocket = onSocket;
     this.retryDelay = retryDelay;
     this.cleanupFns = [];
     this.openListeners = new Set();
+    this.closeListeners = new Set();
   }
 
   start() {
@@ -48,6 +47,7 @@ class WebSocketRetry {
     const onClose = (event: CloseEvent) => {
       console.warn('Socket closed', event);
       console.debug('Retrying in', this.retryDelay, 'ms');
+      this.closeListeners.forEach(listener => listener());
       this.cleanup();
       this.retryAfterDelay();
     }
@@ -80,8 +80,15 @@ class WebSocketRetry {
     return () => this.openListeners.delete(listener);
   }
 
+  onClose(listener: VoidFn): VoidFn {
+    this.closeListeners.add(listener);
+    return () => this.closeListeners.delete(listener);
+  }
+ 
   stop() {
     this.cleanup();
+    this.openListeners.clear();
+    this.closeListeners.clear();
   }
 
 }
