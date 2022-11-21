@@ -4,29 +4,61 @@ import { Client } from "../client";
 export function useClient() {
   const [client, setClient] = useState<Client|undefined>(undefined);
   useEffect(() => {
-    const retry = createClient('wss://c4.jamespackard.me', setClient, () => setClient(undefined), 5_000);
-    return () => retry.cancel();
+    const controller = new WebSocketRetry('wss://c4.jamespackard.me', socket => setClient(socket && new Client(socket)), 5_000);
+    controller.start();
+    return () => controller.stop();
   }, []);
+  useEffect(() => {
+    if (client) {
+      return () => client.stop();
+    }
+  }, [client]);
   return client;
 }
 
-function createClient(url: string, onClientReady: (client: Client) => void, onClientUnready: () => void, retry_delay: number): { cancel: () => void }{
-  const socket = new WebSocket('wss://c4.jamespackard.me');
-  const retry = { cancel: () => {} };
-  function onOpen() {
-    const client = new Client(socket);
-    const onClose = () => {
-      client.stop();
-      socket.removeEventListener('open', onOpen);
-      socket.removeEventListener('close', onClose);
-      onClientUnready();
-      const timeout = setTimeout(() => {
-        retry.cancel = createClient(url, onClientReady, onClientUnready, retry_delay).cancel;
-      }, retry_delay);
-      retry.cancel = () => clearTimeout(timeout);
-    };
-    socket.addEventListener('close', onClose);
+class WebSocketRetry {
+
+  private readonly url: string;
+  private readonly onSocket: (socket?: WebSocket) => void;
+  private readonly retryDelay: number;
+  private cleanupFns: CleanupFn[];
+
+  constructor(url: string, onSocket: (socket?: WebSocket) => void, retryDelay: number) {
+    this.url = url;
+    this.onSocket = onSocket;
+    this.retryDelay = retryDelay;
+    this.cleanupFns = [];
   }
-  socket.addEventListener('open', onOpen);
-  return retry;
+
+  start() {
+    const socket = new WebSocket(this.url);
+    this.onSocket(socket);
+    const onClose = (event: CloseEvent) => {
+      console.warn('Socket closed', event);
+      this.cleanup();
+      this.retryAfterDelay();
+    }
+    socket.addEventListener('close', onClose);
+    this.cleanupFns.unshift(() => {
+      socket.removeEventListener('close', onClose);
+      socket.close();
+    });
+  }
+
+  private retryAfterDelay() {
+    const timeout = setTimeout(() => this.start(), this.retryDelay);
+    this.cleanupFns.push(() => clearTimeout(timeout));
+  }
+
+  private cleanup() {
+    this.cleanupFns.forEach(fn => fn());
+    this.cleanupFns = [];
+  }
+
+  stop() {
+    this.cleanup();
+  }
+
 }
+
+type CleanupFn = () => void;
