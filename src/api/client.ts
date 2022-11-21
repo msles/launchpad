@@ -1,15 +1,23 @@
+import { Observable, Subject } from "rxjs";
+import { Layout } from "./layout";
+
 export class Client {
 
   private readonly socket: WebSocket;
   private readonly modes: Map<string|undefined, Mode>;
   private readonly cleanup: () => void;
+  public readonly layout: Observable<Layout>;
 
   constructor(socket: WebSocket) {
     this.socket = socket;
     this.modes = new Map();
+    const layoutSubject = new Subject<Layout>();
+    const unsubscribeLayout = this.channel<Layout>('layout').subscribe(layout => layoutSubject.next(layout));
+    this.layout = layoutSubject;
     const messageHandler = (message: MessageEvent<string>) => this.onMessage(message);
     this.socket.addEventListener('message', messageHandler);
     this.cleanup = () => {
+      unsubscribeLayout();
       this.socket.removeEventListener('message', messageHandler);
     }
   }
@@ -36,6 +44,7 @@ export class Client {
   }
 
   stop() {
+    this.modes.clear();
     this.cleanup();
   }
 
