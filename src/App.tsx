@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { DrawDemo } from './components/DrawDemo';
 import { Pong } from './components/pong/Pong';
-
+import { useClient } from './api/hooks/useClient';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import AdminPage from './components/adminPages/AdminPage';
@@ -13,51 +13,18 @@ import DrawGuest from './components/guestPages/DrawGuest';
 import GuestPage from './components/guestPages/GuestPage';
 import LayoutGuest from './components/guestPages/LayoutGuest';
 import PongGuest from './components/guestPages/PongGuest';
-
-
-function useWebSocket(): WebSocket|undefined {
-  const [socket, setSocket] = useState<WebSocket|undefined>();
-  useEffect(() => {
-    const s = new WebSocket('wss://c4.jamespackard.me');
-    let clearPingInterval = () => {};
-    function onOpen() {
-      setSocket(s);
-      console.debug('WebSocket connection established');
-      const interval = setInterval(() => s.send(JSON.stringify({channel: 'ping'})), 5_000);
-      clearPingInterval = () => clearInterval(interval);
-    }
-    function onClose(event: CloseEvent) {
-      console.debug('WebSocket connection closed');
-      console.debug(event);
-    }
-    function onMessage(event: MessageEvent) {
-      console.debug(event.data);
-    }
-    s.addEventListener('open', onOpen);
-    s.addEventListener('close', onClose);
-    s.addEventListener('message', onMessage);
-    return () => {
-      clearPingInterval();
-      s.removeEventListener('open', onOpen);
-      s.removeEventListener('close', onClose);
-      s.removeEventListener('message', onMessage);
-      s.close();
-    }
-  }, []);
-  return socket;
-}
-
+import { LayoutProvider } from './context/LayoutContext';
 
 function App() {
-  const socket = useWebSocket();
-  return (
-    <>
+  const client = useClient();
+  return client ?
+    <LayoutProvider client={client}>
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
 
         <Route path="/adminPage" element={<AdminPage />} />
-        <Route path="/layoutAdmin" element={<LayoutAdmin />} />
+        <Route path="/layoutAdmin" element={<LayoutAdmin client={client}/>} />
         <Route path="/drawAdmin" element={<DrawAdmin />} />
         <Route path="/pongAdmin" element={<PongAdmin />} />
         
@@ -68,8 +35,8 @@ function App() {
           
       </Routes>
       </BrowserRouter>
-      </>
-  );
+    </LayoutProvider> :
+    <p>Disconnected.</p>
 }
 
 export default App;

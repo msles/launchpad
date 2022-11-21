@@ -1,6 +1,6 @@
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
-import React, { useEffect, useState } from 'react';
-import { DisplayPosition, Position } from '../../context/LayoutContext';
+import React, { useEffect, useRef, useState } from 'react';
+import { DisplayPosition, Position } from '../../api/layout';
 
 interface DraggableBoxProps extends DisplayPosition {
   onChange: (position: Position) => void
@@ -10,6 +10,7 @@ function DraggableBox(props: DraggableBoxProps) {
     
   const [editedPosition, setEditedPosition] = useState<Position>([0, 0]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [stopTimeout, setStopTimeout] = useState({clear: () => {}});
 
   const position = isEditing ? editedPosition : props.position;
 
@@ -24,13 +25,20 @@ function DraggableBox(props: DraggableBoxProps) {
 
   const handleStop = (_: DraggableEvent) => {
     props.onChange(editedPosition);
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setIsEditing(false);
     }, 500);
+    setStopTimeout({clear: () => clearTimeout(timeout)});
   }
 
-    return <Draggable bounds="parent" onStart={handleStart} onDrag={handleDrag} onStop={handleStop} position={{x: position[0], y: position[1]}}>
-          <div className="box border border-dark " style={{height: '100px', width: '100px', position: 'absolute'}}> 
+  useEffect(() => {
+    return () => stopTimeout.clear();
+  }, [stopTimeout]);
+
+  const ref = useRef<HTMLDivElement>(null);
+
+    return <Draggable bounds="parent" onStart={handleStart} onDrag={handleDrag} onStop={handleStop} position={{x: position[0], y: position[1]}} nodeRef={ref}>
+          <div ref={ref} className="box border border-dark " style={{height: '100px', width: '100px', position: 'absolute'}}> 
               <div>x: {position[0].toFixed(0)}, y: {position[1].toFixed(0)}
               </div>
           </div>

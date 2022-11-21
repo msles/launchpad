@@ -2,8 +2,13 @@ import React, {useEffect, useRef, useState} from "react";
 import GameState from "./game-state";
 import { PaddleSlider } from "./PaddleSlider";
 import styles from "./css/Pong.module.css";
+import { Client } from "../../api/client";
 
-export function Pong(props: {socket: WebSocket}) {
+export function Pong(props: {client: Client}) {
+  
+  const pong = props.client.mode('pong');
+  const paddle = pong.channel<number>('paddle');
+
   /*
   const ref = useRef<HTMLCanvasElement>(null);
   const [game] = useState(new GameState(["a", "b"], new Set(), [64, 64]));
@@ -37,17 +42,18 @@ export function Pong(props: {socket: WebSocket}) {
     }
   }, [game]);*/
   function join() {
-    props.socket.send(JSON.stringify({mode: 'pong', channel: 'join', message: 'player'}));
+    // props.socket.send(JSON.stringify({mode: 'pong', channel: 'join', message: 'player'}));
+    pong.channel('join').send('player');
   }
   function start() {
-    props.socket.send(JSON.stringify({mode: 'pong', channel: 'start'}));
+    pong.channel<void>('start').send();
   }
   function stop() {
-    props.socket.send(JSON.stringify({mode: 'pong', channel: 'stop'}));
+    pong.channel<void>('stop').send();
   }
   function movePaddle(y: number) {
+    paddle.send(y);
     // game.movePaddle('a', y);
-    props.socket.send(JSON.stringify({mode: 'pong', channel: 'paddle', message: y}));
   }
   return <div className={styles.pong}>
     <PaddleSlider height={64} onMove={movePaddle}/>

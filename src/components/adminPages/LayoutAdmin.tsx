@@ -1,11 +1,12 @@
 import Navbar from '../Navbar/NavbarAdmin'
 import React, { useContext, useState } from 'react';
-import { Display, DisplayPosition, Layout, LayoutContext, Position } from '../../context/LayoutContext';
+import { Display, Position } from '../../api/layout';
+import { LayoutContext } from "../../context/LayoutContext";
 
 import DraggableBox from '../layoutComponents/DraggableBox';
 
 import Button from 'react-bootstrap/Button';
-import { Client } from '../../api/api';
+import { Client } from '../../api/client';
 
 
 function App(props: {client: Client}) {
@@ -14,25 +15,13 @@ function App(props: {client: Client}) {
 
     const layout = useContext(LayoutContext);
 
-    const updateDisplayPosition = (display: Display, changedPosition: Position) => {
-        const index = layout.findIndex(displayPos => displayPos.display === display)
-        if (index == -1) {
-            return layout;
-        }
-        return [
-            ...layout.slice(0, index),
-            {display: display, position: changedPosition},
-            ...layout.slice(index + 1)
-        ]
-    }
-
-    const submitLayoutChange = (changedLayout: Layout) => {
-        props.client.channel('layout').send(changedLayout);
+    const submitLayoutChange = (display: Display, position: Position) => {
+        props.client.channel('layout').send({id: display.id, position});
     }
 
     const displays = layout.map(({display, position}, index) => 
         <DraggableBox key={index} display={display} position={position}
-            onChange={changedPosition => submitLayoutChange(updateDisplayPosition(display, changedPosition))}/>);
+            onChange={changedPosition => submitLayoutChange(display, changedPosition)}/>);
     // const [numberPosition, setNumberPositions] = useState([{x: 0, y: 0, isFixed: isFixed}, {x: 0, y: 0, isFixed: isFixed}])
 
 /*
