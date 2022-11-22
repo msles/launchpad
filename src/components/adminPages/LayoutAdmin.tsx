@@ -1,16 +1,28 @@
 import Navbar from '../Navbar/NavbarAdmin'
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { Display, Position } from '../../api/layout';
+import { LayoutContext } from "../../context/LayoutContext";
 
 import DraggableBox from '../layoutComponents/DraggableBox';
 
 import Button from 'react-bootstrap/Button';
+import { Client } from '../../api/client';
 
 
-function App() {
+function App(props: {client: Client}) {
 
     const [isFixed, setIsFixed] = useState(false)
 
-    const [numberPosition, setNumberPositions] = useState([{x: 0, y: 0, isFixed: isFixed}, {x: 0, y: 0, isFixed: isFixed}])
+    const layout = useContext(LayoutContext);
+
+    const submitLayoutChange = (display: Display, position: Position) => {
+        props.client.channel('layout').send({id: display.id, position});
+    }
+
+    const displays = layout.map(({display, position}, index) => 
+        <DraggableBox key={index} display={display} position={position}
+            onChange={changedPosition => submitLayoutChange(display, changedPosition)}/>);
+    // const [numberPosition, setNumberPositions] = useState([{x: 0, y: 0, isFixed: isFixed}, {x: 0, y: 0, isFixed: isFixed}])
 
 /*
     const setBoxesVertical = () => {
@@ -34,7 +46,7 @@ function App() {
             <Navbar />
             <div>
                 <div className="border border-dark border-3 rounded container-lg" style={{ position: 'relative', height: '50vh', padding: '10px', marginBottom: '20px', marginTop: '20px'}}>
-                    {numberPosition.map((pos, index) => <DraggableBox key={index} deltaPosition={pos}/>)}
+                    {displays}
                 </div>
             </div>
         </div>
