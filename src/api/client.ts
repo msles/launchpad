@@ -4,8 +4,8 @@ import { ModeType } from "./mode";
 
 export interface Client {
 
-  readonly layout: Observable<Layout>;
-  readonly currentMode: Observable<ModeType>
+  readonly layout: ObservableValue<Layout,[]>;
+  readonly currentMode: ObservableValue<ModeType,undefined>
 
   mode(name: string|undefined): Mode;
   channel<T>(name: string): Channel<T>;
@@ -18,8 +18,8 @@ export class WebClient implements Client {
   private readonly socket: WebSocket;
   private readonly modes: Map<string|undefined, Mode>;
   private readonly cleanup: () => void;
-  public readonly layout: Observable<Layout>;
-  public readonly currentMode: Observable<ModeType>
+  public readonly layout: ObservableValue<Layout,[]>;
+  public readonly currentMode: ObservableValue<ModeType, undefined>
 
   constructor(socket: WebSocket) {
     this.socket = socket;
@@ -28,8 +28,8 @@ export class WebClient implements Client {
     const layoutSubject = new Subject<Layout>();
     const unsubscribeMode = this.channel<ModeType>('mode').subscribe(name => modeSubject.next(name));
     const unsubscribeLayout = this.channel<Layout>('layout').subscribe(layout => layoutSubject.next(layout));
-    this.layout = layoutSubject;
-    this.currentMode = modeSubject;
+    this.layout = new ObservableValue([], layoutSubject);
+    this.currentMode = new ObservableValue(undefined, modeSubject);
     const messageHandler = (message: MessageEvent<string>) => this.onMessage(message);
     this.socket.addEventListener('message', messageHandler);
     this.cleanup = () => {
@@ -69,6 +69,21 @@ export class WebClient implements Client {
 
   channel<T>(name: string): Channel<T> {
     return this.mode(undefined).channel(name);
+  }
+
+}
+
+class ObservableValue<T,Default=T> {
+
+  public latest: T|Default;
+  public readonly observable: Observable<T>;
+
+  constructor(def: Default, source: Observable<T>) {
+    this.latest = def;
+    this.observable = source;
+    this.observable.subscribe(val => {
+      this.latest = val;
+    });
   }
 
 }
@@ -130,8 +145,8 @@ class Mode {
 
 export class DisconnectedClient implements Client {
 
-  currentMode: Observable<ModeType> = new Subject();
-  layout: Observable<Layout> = new Subject();
+  currentMode: ObservableValue<ModeType, undefined> = new ObservableValue(undefined, new Subject());
+  layout: ObservableValue<Layout, []> = new ObservableValue([], new Subject());
 
   mode(): Mode {
     return new Mode(() => {})
