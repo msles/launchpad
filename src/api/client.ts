@@ -1,4 +1,4 @@
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, Subscription } from "rxjs";
 import { Layout } from "./layout";
 import { ModeType } from "./mode";
 
@@ -35,6 +35,8 @@ export class WebClient implements Client {
     this.cleanup = () => {
       unsubscribeMode();
       unsubscribeLayout();
+      this.layout.stop();
+      this.currentMode.stop();
       this.socket.removeEventListener('message', messageHandler);
     }
   }
@@ -77,13 +79,18 @@ class ObservableValue<T,Default=T> {
 
   public latest: T|Default;
   public readonly observable: Observable<T>;
+  private readonly subscription: Subscription;
 
   constructor(def: Default, source: Observable<T>) {
     this.latest = def;
     this.observable = source;
-    this.observable.subscribe(val => {
+    this.subscription = this.observable.subscribe(val => {
       this.latest = val;
     });
+  }
+
+  stop() {
+    this.subscription.unsubscribe();
   }
 
 }
