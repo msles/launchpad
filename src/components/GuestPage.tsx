@@ -1,10 +1,9 @@
-import React from 'react';
 import {BsGridFill, BsGithub, BsPencilSquare, BsDot} from 'react-icons/bs'
 import {TbMinusVertical} from 'react-icons/tb'
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 
 
-function App() {
+function GuestPage() {
     return (
     <div>
         <main>
@@ -73,4 +72,4 @@ function App() {
     )
 }
 
-export default App;
+export default GuestPage;

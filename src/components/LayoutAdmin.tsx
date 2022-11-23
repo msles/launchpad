@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Display, Position } from '../api/layout';
 import { LayoutContext } from "../context/LayoutContext";
 import DraggableBox from './layoutComponents/DraggableBox';
 import { Client } from '../api/client';
 
 
-function App(props: {client: Client}) {
+function Layout(props: {client: Client}) {
 
     const layout = useContext(LayoutContext);
 
@@ -25,4 +25,4 @@ function App(props: {client: Client}) {
     </div>
 }
 
-export default App;
+export default Layout;
