@@ -1,7 +1,7 @@
 import './App.css';
 import { useClient } from './api/hooks/useClient';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LayoutAdmin from './components/LayoutAdmin';
+import Layout from './components/layout';
 import GuestPage from './components/GuestPage';
 import { LayoutProvider } from './context/LayoutContext';
 
@@ -11,7 +11,7 @@ function App() {
     <LayoutProvider client={client}>
       <BrowserRouter>
         <Routes>
-          <Route path="/admin" element={<LayoutAdmin client={client}/>} />
+          <Route path="/admin" element={<Layout client={client}/>} />
           <Route path="/" element={<GuestPage />} />
         </Routes>
       </BrowserRouter>

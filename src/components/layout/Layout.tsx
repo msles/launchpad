@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { Display, Position } from '../api/layout';
-import { LayoutContext } from "../context/LayoutContext";
-import DraggableBox from './layoutComponents/DraggableBox';
-import { Client } from '../api/client';
+import { Display, Position } from '../../api/layout';
+import { LayoutContext } from "../../context/LayoutContext";
+import DraggableBox from './DraggableBox';
+import { Client } from '../../api/client';
 
 
 function Layout(props: {client: Client}) {
