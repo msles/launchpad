@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { DisplayPosition, Position } from '../../api/layout';
 
 interface DraggableBoxProps extends DisplayPosition {
-  onChange: (position: Position) => void
+  onChange: (position: Position) => Promise<void>
 }
 
 function DraggableBox(props: DraggableBoxProps) {
@@ -24,11 +24,13 @@ function DraggableBox(props: DraggableBoxProps) {
   };
 
   const handleStop = (_: DraggableEvent) => {
-    props.onChange(editedPosition);
-    const timeout = setTimeout(() => {
-      setIsEditing(false);
-    }, 500);
-    setStopTimeout({clear: () => clearTimeout(timeout)});
+    const stopEditing = () => setIsEditing(false);
+    const timeout = setTimeout(stopEditing, 500);
+    const clear = () => clearTimeout(timeout);
+    setStopTimeout({clear});
+    props.onChange(editedPosition)
+      .then(stopEditing)
+      .finally(clear);
   }
 
   useEffect(() => {

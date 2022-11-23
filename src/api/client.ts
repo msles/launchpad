@@ -120,6 +120,18 @@ class Channel<T> {
     this.sendMessage(message);
   }
 
+  /**
+   * Resolves with the next value received on this channel.
+   */
+  next(): Promise<T> {
+    return new Promise<T>(resolve => {
+      const unsubscribe = this.subscribe(value => {
+          unsubscribe();
+          resolve(value);
+      });
+    });
+  }
+
 }
 
 class Mode {

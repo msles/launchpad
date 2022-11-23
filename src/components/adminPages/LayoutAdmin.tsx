@@ -15,8 +15,11 @@ function App(props: {client: Client}) {
 
     const layout = useContext(LayoutContext);
 
-    const submitLayoutChange = (display: Display, position: Position) => {
-        props.client.channel('layout').send({id: display.id, position});
+    const submitLayoutChange = async (display: Display, position: Position) => {
+        const channel = props.client.channel('layout');
+        const done = channel.next(); // the change is complete once the next layout message is received
+        channel.send({id: display.id, position});
+        return done as Promise<void>;
     }
 
     const displays = layout.map(({display, position}, index) => 
