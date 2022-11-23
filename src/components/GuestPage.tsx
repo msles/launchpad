@@ -12,7 +12,7 @@ function GuestPage() {
                     <div>
                         <h1>M.S.L.E.S</h1>
                         <h5>The Multi-Screen LED Entertainment System Project</h5>
-                        <Button variant="dark" href='https://github.com/msles'><BsGithub />  Source Code</Button>
+                        <Button variant="dark" href='https://github.com/msles' target="_blank" rel="noreferrer"><BsGithub />  Source Code</Button>
                     </div>
                 </div>
             </div> 
