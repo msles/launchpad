@@ -7,16 +7,15 @@ import { LayoutProvider } from './context/LayoutContext';
 
 function App() {
   const [client, connected] = useClient();
-  return connected ?
-    <LayoutProvider client={client}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/admin" element={<Layout client={client}/>} />
-          <Route path="/" element={<GuestPage />} />
-        </Routes>
-      </BrowserRouter>
-    </LayoutProvider> :
-    <p>Disconnected.</p>
+  // todo: show toast when `connected` changes
+  return <LayoutProvider client={client}>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin" element={<Layout client={client}/>} />
+        <Route path="/" element={<GuestPage />} />
+      </Routes>
+    </BrowserRouter>
+  </LayoutProvider>
 }
 
 export default App;
