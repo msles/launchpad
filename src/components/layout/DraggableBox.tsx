@@ -1,5 +1,5 @@
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DisplayPosition, Position } from '../../api/layout';
 
 interface DraggableBoxProps extends DisplayPosition {

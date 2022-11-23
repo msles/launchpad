@@ -1,7 +1,9 @@
 div.pong {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  height: 100vh;
-  align-items: center;
+  
+}
+
+p.help {
+  text-align: center;
+  color: #888;
+  padding: 1em 0;
 }

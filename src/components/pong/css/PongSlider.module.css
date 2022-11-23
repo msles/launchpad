@@ -1,10 +1,14 @@
-div.slider {
-  width: 50%;
-  height: 100%;
+div.touch {
+  height: 80vh;
+  touch-action: none;
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 div.paddle {
-  background-color: black;
-  width: 20%;
+  background-color: #333;
+  border: 2px solid #aaa;
+  border-radius: 8px;
   height: 25%;
+  width: 50px;
+  margin: auto;
 }

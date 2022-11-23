@@ -1,4 +1,3 @@
-import React from "react";
 import useMeasure from "react-use-measure";
 
 export function DrawDemo(props: {socket: WebSocket}) {

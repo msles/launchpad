@@ -1,25 +1,18 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from '../Navbar/NavbarGuest'
-import React from 'react'
-import { Github, Grid } from 'react-bootstrap-icons';
 import {BsGridFill, BsGithub, BsPencilSquare, BsDot} from 'react-icons/bs'
 import {TbMinusVertical} from 'react-icons/tb'
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 
 
-function App() {
+function GuestPage() {
     return (
     <div>
-        <header >
-            <Navbar />
-        </header>
         <main>
             <div>
                 <div className='border text-center d-flex align-items-center justify-content-center' style={{height: '50vh'}}>
                     <div>
                         <h1>M.S.L.E.S</h1>
                         <h5>The Multi-Screen LED Entertainment System Project</h5>
-                        <Button variant="dark" href='https://github.com/msles'><BsGithub />  Source Code</Button>
+                        <Button variant="dark" href='https://github.com/msles' target="_blank" rel="noreferrer"><BsGithub />  Source Code</Button>
                     </div>
                 </div>
             </div> 
@@ -79,4 +72,4 @@ function App() {
     )
 }
 
-export default App;
+export default GuestPage;
