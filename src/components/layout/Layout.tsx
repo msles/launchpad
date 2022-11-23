@@ -5,7 +5,7 @@ import DraggableBox from './DraggableBox';
 import { Client } from '../../api/client';
 
 
-function Layout(props: {client: Client}) {
+export function Layout(props: {client: Client}) {
 
     const layout = useContext(LayoutContext);
 
@@ -24,5 +24,3 @@ function Layout(props: {client: Client}) {
         {displays}
     </div>
 }
-
-export default Layout;
