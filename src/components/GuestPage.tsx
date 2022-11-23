@@ -1,7 +1,4 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from '../Navbar/NavbarGuest'
-import React from 'react'
-import { Github, Grid } from 'react-bootstrap-icons';
+import React from 'react';
 import {BsGridFill, BsGithub, BsPencilSquare, BsDot} from 'react-icons/bs'
 import {TbMinusVertical} from 'react-icons/tb'
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
@@ -10,9 +7,6 @@ import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 function App() {
     return (
     <div>
-        <header >
-            <Navbar />
-        </header>
         <main>
             <div>
                 <div className='border text-center d-flex align-items-center justify-content-center' style={{height: '50vh'}}>
