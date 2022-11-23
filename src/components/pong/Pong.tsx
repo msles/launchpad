@@ -52,11 +52,12 @@ export function Pong(props: {client: Client}) {
     pong.channel<void>('stop').send();
   }
   function movePaddle(y: number) {
-    paddle.send(y);
+    paddle.send(toPrecision(y, 3));
     // game.movePaddle('a', y);
   }
   return <div className={styles.pong}>
-    <PaddleSlider height={64} onMove={movePaddle}/>
+    <PaddleSlider onMove={movePaddle}/>
+    <p className={styles.help}>Drag the paddle up and down to play.</p>
     <div>
       <button onClick={join}>Join</button>
       <button onClick={start}>Start</button>
@@ -64,4 +65,9 @@ export function Pong(props: {client: Client}) {
     </div>
     {/*<canvas ref={ref} width={64} height={64} style={{width: 64*4, height: 64*4}}/>*/}
   </div>
+}
+
+function toPrecision(x: number, decimalPlaces: number) {
+  const factor = Math.pow(10, decimalPlaces);
+  return Math.round(x * factor) / factor;
 }
