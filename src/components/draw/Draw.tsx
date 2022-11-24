@@ -17,7 +17,7 @@ export function Draw(props: {client: Client}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const layout = useContext(LayoutContext);
   const [containerRef, containerSize] = useMeasure();
-  const [brush, setBrush] = useState(new Brush([0, 0, 0]));
+  const [brush, setBrush] = useState(new Brush([219, 62, 0]));
   const drawMode = props.client.mode('draw');
   const paintChannel = drawMode.channel<PaintCommand>('paint');
   const [width, height] = useMemo(() => layoutBounds(layout), [layout]);
