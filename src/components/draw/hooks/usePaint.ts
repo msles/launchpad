@@ -1,15 +1,16 @@
 import { useEffect } from "react";
-import { Channel } from "../../../api";
+import { Mode } from "../../../api";
+import { Position } from "../../../api/layout";
 
-export type PaintPixel = {
-  coordinates: readonly [number, number],
-  color: readonly [number, number, number]
+export type PaintCommand = {
+  color: Color,
+  pixels: Position[]
 };
 
-export type Pixels = PaintPixel[];
+export type Color = readonly [number, number, number];
 
-export function usePaint(paintChannel: Channel<Pixels>, onPixels: (pixels: Pixels) => void) {
+export function usePaint(drawMode: Mode, onPixels: (pixels: PaintCommand[]) => void) {
   useEffect(() => {
-    return paintChannel.subscribe(onPixels);
-  }, [paintChannel, onPixels]);
+    return drawMode.channel<PaintCommand[]>('pixels').subscribe(onPixels);
+  }, [drawMode, onPixels]);
 }
