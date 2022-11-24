@@ -181,6 +181,8 @@ export class DisconnectedClient implements Client {
 
 }
 
+export type {Mode, Channel};
+
 type ChannelMessage<T = unknown> = {
   mode?: string,
   channel: string,

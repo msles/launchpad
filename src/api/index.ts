@@ -1,1 +1,1 @@
-export type { Client } from "./client";
+export type { Client, Mode, Channel } from "./client";
