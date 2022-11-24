@@ -11,6 +11,6 @@ export type Color = readonly [number, number, number];
 
 export function usePaint(drawMode: Mode, onPixels: (pixels: PaintCommand[]) => void) {
   useEffect(() => {
-    return drawMode.channel<PaintCommand[]>('pixels').subscribe(onPixels);
+    return drawMode.channel<PaintCommand[]>('paint').subscribe(onPixels);
   }, [drawMode, onPixels]);
 }

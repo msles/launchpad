@@ -20,13 +20,14 @@ export function Draw(props: {client: Client}) {
   const drawMode = props.client.mode('draw');
   const paintChannel = drawMode.channel<PaintCommand>('paint');
   const [width, height] = useMemo(() => layoutBounds(layout), [layout]);
+  const [syncDisabled, setSyncDisabled] = useState(false);
   const draw = useCallback((canvas: SerializedCanvas) => {
     const ctx = canvasRef.current?.getContext('2d');
     if (ctx) {
       drawCanvas(ctx, canvas, [width, height]);
     }
   }, []);
-  useSync(drawMode, 5_000, draw);
+  useSync(drawMode, syncDisabled, 5_000, draw);
   usePaint(drawMode, commands => {
     const ctx = canvasRef.current?.getContext('2d');
     ctx && commands.forEach(command => drawLEDs(ctx, command));
@@ -44,6 +45,8 @@ export function Draw(props: {client: Client}) {
   }
   return <div className={styles.container} ref={containerRef}>
     <Canvas ref={canvasRef} onPaint={onPaint}
+                onPaintStart={() => setSyncDisabled(true)}
+                onPaintStop={() => setSyncDisabled(false)}
                 width={width * LED_SIZE} height={height * LED_SIZE}
                 maxWidth={containerSize.width} maxHeight={window.innerHeight * 0.75}/>
     <div>
