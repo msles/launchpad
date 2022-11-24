@@ -5,8 +5,9 @@ import { layoutBounds, Position } from "../../api/layout";
 import { LayoutContext } from "../../context/LayoutContext";
 import styles from "./css/Draw.module.css";
 import { DisplayPixels, SerializedCanvas, useSync } from "./hooks/useSync";
-import { GithubPicker } from "react-color";
+import { GithubPicker, ColorResult } from "react-color";
 import { Pixels, usePaint } from "./hooks/usePaint";
+import { Button } from "react-bootstrap";
 
 type Context2D = CanvasRenderingContext2D;
 
@@ -14,6 +15,7 @@ const LED_SIZE = 8;
 
 export function Draw(props: {client: Client}) {
   const [canvasRef, ctx] = useCtx();
+  const layout = useContext(LayoutContext);
   const bounds = useLayoutBounds();
   const [width, height] = useCanvasBounds(bounds);
   const [containerRef, containerSize] = useMeasure();
@@ -49,7 +51,9 @@ export function Draw(props: {client: Client}) {
   const onPointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const [x, y] = toCoordinates(event);
     const coordinates = [[x, y], [x-1, y], [x+1, y], [x, y+1], [x, y-1]] as const;
-    const paintPixels = coordinates.map(coords => ({coordinates: coords, color: drawColor}));
+    const paintPixels = coordinates
+      .filter(coords => layout.some(({display, position}) => inBounds(coords, position, display.resolution)))
+      .map(coords => ({coordinates: coords, color: drawColor}))
     if (drawing) {
       paintChannel.send(paintPixels);
       ctx && paintPixels.forEach(({coordinates, color}) => drawLED(ctx, coordinates, color));
@@ -63,12 +67,19 @@ export function Draw(props: {client: Client}) {
             onPointerMove={onPointerMove}/>
     <div>
       <GithubPicker color={{r: drawColor[0], g: drawColor[1], b: drawColor[2]}}
-        onChange={clr => setDrawColor([clr.rgb.r, clr.rgb.g, clr.rgb.b])}/>
+        onChange={(clr: ColorResult) => setDrawColor([clr.rgb.r, clr.rgb.g, clr.rgb.b])}/>
+      <Button onClick={() => drawMode.channel<void>('clear').send()}>Clear</Button>
     </div>
   </div>
 }
 
 type Color = readonly [r: number, g: number, b: number];
+
+function inBounds(coordinates: Position, rectPos: Position, rectSize: Position): boolean {
+  const [x, y] = coordinates;
+  const [w, h] = rectSize;
+  return (x >= rectPos[0] && x < rectPos[0] + w && y >= rectPos[1] && y < rectPos[1] + h);
+}
 
 function toViewportSize(width: number, height: number, maxWidth: number, maxHeight: number): [number, number] {
   const byWidth = maxWidth / width;
