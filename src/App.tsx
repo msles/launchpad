@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout';
 import Home from './components/Home';
 import { LayoutProvider } from './context/LayoutContext';
+import Admin from './components/Admin';
 
 function App() {
   const [client, connected] = useClient();
@@ -11,7 +12,7 @@ function App() {
   return <LayoutProvider client={client}>
     <BrowserRouter>
       <Routes>
-        <Route path="/admin" element={<Layout client={client}/>} />
+        <Route path="/admin" element={<Admin client={client}/>} />
         <Route path="/" element={<Home client={client} />} />
       </Routes>
     </BrowserRouter>
