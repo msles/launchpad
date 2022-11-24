@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect, useContext, useMemo, useCallback } from "react";
+import { useState, useRef, useContext, useMemo, useCallback } from "react";
 import useMeasure from "react-use-measure";
 import { Client } from "../../api";
-import { layoutBounds, Position, Layout } from "../../api/layout";
+import { layoutBounds, Position } from "../../api/layout";
 import { LayoutContext } from "../../context/LayoutContext";
 import styles from "./css/Draw.module.css";
 import { DisplayPixels, SerializedCanvas, useSync } from "./hooks/useSync";
@@ -34,7 +34,6 @@ export function Draw(props: {client: Client}) {
   const onPaint = (point: Position) => {
     const [px, py] = point;
     const [x, y] = [Math.floor(px / LED_SIZE), Math.floor(py / LED_SIZE)];
-    console.log(x, y);
     const coordinates = [[x, y], [x-1, y], [x+1, y], [x, y+1], [x, y-1]] as const;
     const pixels = coordinates
       .filter(coords => layout.some(({display, position}) => inBounds(coords, position, display.resolution)))
