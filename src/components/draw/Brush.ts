@@ -15,8 +15,8 @@ export class Brush {
     const [x, y] = position;
     const coordinates = [[x, y], [x-1, y], [x+1, y], [x, y+1], [x, y-1]] as const;
     const newPixels = coordinates
-      .filter(coords => this.lastPixels.every(pixel => !this.pixelsEqual(coords, pixel) &&
-                        layout.some(({display, position}) => this.inBounds(coords, position, display.resolution))));
+      .filter(coords => this.lastPixels.every(pixel => !this.pixelsEqual(coords, pixel)) &&
+                        layout.some(({display, position}) => this.inBounds(coords, position, display.resolution)));
     this.lastPixels = newPixels;
     return {color: this.color, pixels: newPixels};
   }
