@@ -6,3 +6,10 @@
   touch-action: none;
   gap: 20px;
 }
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
