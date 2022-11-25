@@ -1,7 +1,6 @@
 import './App.css';
 import { useClient } from './api/hooks/useClient';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Layout } from './components/layout';
 import Home from './components/Home';
 import { LayoutProvider } from './context/LayoutContext';
 import Admin from './components/Admin';
