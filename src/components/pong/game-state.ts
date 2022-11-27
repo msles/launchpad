@@ -106,8 +106,8 @@ class GameState<User> {
     context.fillStyle = 'black';
     context.fillRect(0, 0, this.size[0], this.size[1]);
     context.fillStyle = 'white';
-    context.fillText(this.players[0].getScore(), 13, 10, 6);
-    context.fillText(this.players[1].getScore(), 45, 10, 6);
+    context.fillText(this.players[0].getScore(), this.size[0] / 2 - 15, 10, 6);
+    context.fillText(this.players[1].getScore(), this.size[0] / 2 + 7, 10, 6);
     Array.from(this.paddles.values()).forEach(paddle => paddle.render(context));
     this.balls.forEach(ball => ball.render(context));
     this.obstacles.forEach(Block => Block.render(context));
@@ -178,20 +178,20 @@ class Paddle extends Entity2D {
     );
   }
 
-  //Hoping to rectify the middle bouncing w this, got rid of + (left)/-(right) this.size/2 if that doesn't work put it back
+  
   private isCollidingWith(ball: Ball) {
     if (this.side) { // right
-      return ball.rightPaddleCollision(this.position[0], this.position[1] - this.size[1] / 2, this.size[1]);
+      return ball.rightPaddleCollision(this.position[0] - this.size[0]/2, this.position[1] - this.size[1] / 2, this.size[1]);
     }
     else { // left
-      return ball.leftPaddleCollision(this.position[0], this.position[1] - this.size[1] / 2, this.size[1]);
+      return ball.leftPaddleCollision(this.position[0] + this.size[0]/2, this.position[1] - this.size[1] / 2, this.size[1]);
     }
   }
 
   collideWith(ball: Ball) {
     if (this.isCollidingWith(ball)) {
       ball.transformVelocity(vel => [
-        vel[0] * -1,
+        vel[0] * -1.06,
         vel[1]
       ]);
       //ball.changeXdir();
@@ -241,11 +241,11 @@ class Ball extends Entity2D {
   //Atempting to change so that it's in line with the paddle and not just its x position (this works for now)
   //I think the velocity check should be enough to distinguish when the checks are active
   leftPaddleCollision(x: number, y: number, size: number) {
-    return ((this.position[0] - this.radius) <= x && (this.position[1] >= y && this.position[1] <= (y + size)));
+    return ((this.position[0] - this.radius) <= x && (this.position[1] >= y && this.position[1] <= (y + size)) && this.velocity[0] < 0);
   }
 
   rightPaddleCollision(x: number, y: number, size: number) {
-    return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + size)));
+    return (this.position[0] + this.radius) >= x && ((this.position[1] >= y && this.position[1] <= (y + size)) && this.velocity[0] > 0);
   }
 
   //For it to collide it has to satisfy these requirements AND be on the right side of the block, or else infinitely collides after one collision
@@ -294,11 +294,13 @@ class Ball extends Entity2D {
     if (this.position[0] + this.radius <= x && x != size){
       //add 1 to player 1 score
       this.position = [size/2, 32];
+      this.velocity = [-.014, this.velocity[1]];
       player.addPoint();
     }
     else if (this.position[0] - this.radius >= x && x != 0){
       //add 1 to player 2 score
       this.position = [size/2, 32];
+      this.velocity = [.014, this.velocity[1]]
       player.addPoint();
     }
   }
