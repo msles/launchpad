@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import { LayoutProvider } from './context/LayoutContext';
 import Admin from './components/Admin';
+import { PongTest } from './components/pong/PongTest';
 
 function App() {
   const [client, connected] = useClient();
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/admin" element={<Admin client={client}/>} />
         <Route path="/" element={<Home client={client} />} />
+        <Route path="/pong-test" element={<PongTest/>} />
       </Routes>
     </BrowserRouter>
   </LayoutProvider>

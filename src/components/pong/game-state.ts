@@ -69,7 +69,7 @@ class GameState<User> {
   }
 
   movePaddle(player: User, y: number): void {
-    this.paddles.get(player)?.move(([x, _]) => [x, y]);
+    this.paddles.get(player)?.move(([x, _]) => [x, Math.floor(y * this.size[1])]);
   }
 
   placeObstacle(obstacle: Obstacle): void {
