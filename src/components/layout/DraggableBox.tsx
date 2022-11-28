@@ -40,7 +40,7 @@ function DraggableBox(props: DraggableBoxProps) {
   const ref = useRef<HTMLDivElement>(null);
 
     return <Draggable bounds="parent" onStart={handleStart} onDrag={handleDrag} onStop={handleStop} position={{x: position[0], y: position[1]}} nodeRef={ref}>
-          <div ref={ref} className="box border border-dark " style={{height: '100px', width: '100px', position: 'absolute'}}> 
+          <div ref={ref} className="box border border-dark " style={{height: '64px', width: '64px', position: 'absolute'}}> 
               <div>x: {position[0].toFixed(0)}, y: {position[1].toFixed(0)}
               </div>
           </div>
