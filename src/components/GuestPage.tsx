@@ -71,7 +71,7 @@ function GuestPage() {
                 <div className='border-bottom text-center justify-content-center' style={{paddingTop: '30px'}}>
                     <div>
                         <h1 className='font-link' style={{paddingBottom: '30px'}}>How we did it</h1>
-                        <Container>
+                        <Container className='border-bottom'>
                             <Row className="justify-content-md-center">
                                 <Col md>
                                     <h3 style={{textDecoration: 'underline'}}>Architecture</h3>
@@ -83,11 +83,11 @@ function GuestPage() {
                                     </p>
                                 </Col>
                                 <Col md>
-                                    <Image src={arch2} fluid={true} style={{width:'60vh'}}></Image>
+                                    <Image rounded={true} src={arch2} fluid={true} style={{width:'60vh'}}></Image>
                                 </Col>
                             </Row>
                         </Container>
-                        <Container style={{padding: '20px'}}>
+                        <Container style={{padding: '20px'}} className='border-bottom'>
                             <Row className="justify-content-md-center">
                                 <Col md={{ span: 6, order: 'last' }}>
                                     <h3 style={{padding: '20px', textDecoration: 'underline'}}>Pipeline</h3>
@@ -96,11 +96,11 @@ function GuestPage() {
                                     </p>
                                 </Col>
                                 <Col md={{ span: 6, order: 'first' }}>
-                                    <Image src={pipeline} fluid={true} style={{width:'60vh'}}></Image>
+                                    <Image rounded={true} src={pipeline} fluid={true} style={{width:'60vh'}}></Image>
                                 </Col>
                             </Row>
                         </Container>
-                        <Container style={{padding: '20px'}}>
+                        <Container style={{padding: '20px'}} className='border-bottom'>
                             <Row className="justify-content-md-center">
                                 <Col md>
                                     <h3 style={{padding: '20px', textDecoration: 'underline'}}>LED Board and Raspberry Pi</h3>
@@ -109,11 +109,11 @@ function GuestPage() {
                                     </p>
                                 </Col>
                                 <Col md>
-                                    <Image src={backside} fluid={true} style={{width:'60vh'}}></Image>
+                                    <Image rounded={true} src={backside} fluid={true} style={{width:'60vh'}}></Image>
                                 </Col>
                             </Row>
                         </Container>
-                        <Container style={{padding: '20px'}}>
+                        <Container style={{padding: '20px'}} >
                             <Row className="justify-content-md-center">
                                 <Col md={{ span: 6, order: 'last' }}>
                                     <h3 style={{padding: '20px', textDecoration: 'underline'}}>Battery</h3>
@@ -124,7 +124,7 @@ function GuestPage() {
                                     </p>
                                 </Col>
                                 <Col md={{ span: 6, order: 'first' }}>
-                                    <Image src={battery} fluid={true} style={{width:'50vh'}}></Image>
+                                    <Image rounded={true} src={battery} fluid={true} style={{width:'50vh'}}></Image>
                                 </Col>
                             </Row>
                         </Container>
