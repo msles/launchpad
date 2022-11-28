@@ -4,8 +4,10 @@ import GameState from "./game-state";
 import { PaddleSlider } from "./PaddleSlider";
 
 export function PongTest() {
+  const width = 64;
+  const height = 64;
   const ref = useRef<HTMLCanvasElement>(null);
-  const [game] = useState(new GameState(["a", "b"], new Set(), [64, 64]));
+  const [game] = useState(new GameState(["a", "b"], new Set(), [width, height]));
   useEffect(() => {
     if (!ref.current) return;
     const context = ref.current.getContext('2d')!;
@@ -40,8 +42,8 @@ export function PongTest() {
     <PaddleSlider onMove={y => game.movePaddle('a', y)}/>
     <PaddleSlider onMove={y => game.movePaddle('b', y)}/>
     </div>
-    <Canvas ref={ref} width={64} height={64} 
+    <Canvas ref={ref} width={width} height={height} 
     onPaint={() => {}}
-    maxWidth={128} maxHeight={128}/>
+    maxWidth={width * 2} maxHeight={height * 2}/>
   </div>
 }
