@@ -7,6 +7,7 @@ import backside from './images/msles backside.png'
 import battery from './images/msles battery.png'
 import pacman from './images/msles pacman.png'
 import dummyImg from './images/dummyImg.png'
+import arch2 from './images/msles arch2.png'
 
 function GuestPage() {
     return (
@@ -15,7 +16,7 @@ function GuestPage() {
             <div>
                 <div className='border-bottom text-center d-flex align-items-center justify-content-center' style={{height: '50vh'}}>
                     <div>
-                        <h1>M.S.L.E.S</h1>
+                        <h1 className='font-link'>M.S.L.E.S 🚀</h1>
                         <h5>The Multi-Screen LED Entertainment System Project</h5>
                         <Button variant="dark" href='https://github.com/msles' target="_blank" rel="noreferrer"><BsGithub />  Source Code</Button>
                     </div>
@@ -24,12 +25,12 @@ function GuestPage() {
             <div>
                 <div className='border-bottom text-center justify-content-center' style={{paddingTop: '30px'}}>
                     <div>
-                        <h1>What is it?</h1>
+                        <h1 className='font-link'>What is it?</h1>
                         <p style={{fontSize: '20px'}}>M.S.L.E.S combines dynamic lighting devices, wireless connectivity, and user interactivity to create a highly engaging entertainment experience.</p>
                     </div>
                     <Container>
-                        <Row className="justify-content-md-center text-center">
-                            <Col md="auto">
+                        <Row>
+                            <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '18rem', margin:'5vh', height: '11rem'}}>
                                     <Card.Body>
                                         <BsGridFill size={30}/>
@@ -40,7 +41,7 @@ function GuestPage() {
                                     </Card.Body>
                                 </Card>
                             </Col>
-                            <Col md="auto">
+                            <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '18rem', margin:'5vh', height: '11rem'}}>
                                     <Card.Body>
                                         <BsPencilSquare size={30}/>
@@ -51,7 +52,7 @@ function GuestPage() {
                                     </Card.Body>
                                 </Card>
                             </Col>
-                            <Col md="auto">
+                            <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '18rem', margin:'5vh', height: '11rem'}}>
                                     <Card.Body>
                                         <TbMinusVertical size={30}/><BsDot/><TbMinusVertical size={30}/>
@@ -67,13 +68,13 @@ function GuestPage() {
                 </div>  
             </div>    
             <div>
-                <div className='text-center justify-content-center' style={{paddingTop: '30px'}}>
+                <div className='border-bottom text-center justify-content-center' style={{paddingTop: '30px'}}>
                     <div>
-                        <h1 style={{paddingBottom: '30px'}}>How we do it</h1>
+                        <h1 className='font-link' style={{paddingBottom: '30px'}}>How we did it</h1>
                         <Container>
                             <Row className="justify-content-md-center">
                                 <Col md>
-                                    <h3>Architecture</h3>
+                                    <h3 style={{textDecoration: 'underline'}}>Architecture</h3>
                                     <p> 
                                     The control server will support two different modes: drawing and pong. Each of these modes will have the same interface so the control server can delegate and swap between them.<br />
                                     The control server must keep track of which lighting devices are connected and their unique layout. It will inform the modes of the spacial arrangement of the displays, and the mode will produce frames to be rendered for each.<br />
@@ -82,14 +83,14 @@ function GuestPage() {
                                     </p>
                                 </Col>
                                 <Col md>
-                                    <Image src={architecture} fluid={true} style={{width:'60vh'}}></Image>
+                                    <Image src={arch2} fluid={true} style={{width:'60vh'}}></Image>
                                 </Col>
                             </Row>
                         </Container>
                         <Container style={{padding: '20px'}}>
                             <Row className="justify-content-md-center">
                                 <Col md={{ span: 6, order: 'last' }}>
-                                    <h3 style={{padding: '20px'}}>Pipeline</h3>
+                                    <h3 style={{padding: '20px', textDecoration: 'underline'}}>Pipeline</h3>
                                     <p>
                                     Once the devices are powered on and connected to the control server, they will get a default layout of being placed horizontally. The active mode is one of two: draw or pong, and while it has a active mode it will start rendering any actions the user is performing. For example, in draw mode, it will render the pixels the user is drwaing on the webapp. The rendering is produced using the node-pixel-pusher protocol which helps with decoding frames to write to the LED boards.
                                     </p>
@@ -102,7 +103,7 @@ function GuestPage() {
                         <Container style={{padding: '20px'}}>
                             <Row className="justify-content-md-center">
                                 <Col md>
-                                    <h3 style={{padding: '20px'}}>LED Board and Raspberry Pi</h3>
+                                    <h3 style={{padding: '20px', textDecoration: 'underline'}}>LED Board and Raspberry Pi</h3>
                                     <p>
                                         ....
                                     </p>
@@ -112,13 +113,28 @@ function GuestPage() {
                                 </Col>
                             </Row>
                         </Container>
+                        <Container style={{padding: '20px'}}>
+                            <Row className="justify-content-md-center">
+                                <Col md={{ span: 6, order: 'last' }}>
+                                    <h3 style={{padding: '20px', textDecoration: 'underline'}}>Battery</h3>
+                                    <p>
+                                    The battery pack is a 2s3p configurations of 18650 lithium ion cells, connected to a buck converter to supply a 5V output. The pack is rated for 10,500mAH. <br/><br/>
+                                    The battery concept makes the LED boards portable and convenient. Especially if this is a consumer product, a battery pack makes it more of a commercial use.
+                                    
+                                    </p>
+                                </Col>
+                                <Col md={{ span: 6, order: 'first' }}>
+                                    <Image src={battery} fluid={true} style={{width:'50vh'}}></Image>
+                                </Col>
+                            </Row>
+                        </Container>
                     </div>
                 </div>
             </div> 
             <div>
-                <div className='text-center justify-content-center' style={{paddingTop: '30px'}}>
+                <div className='border-bottom text-center justify-content-center lg' style={{paddingTop: '30px', paddingBottom: '30px'}}>
                     <div>
-                        <h1 style={{paddingBottom: '30px'}}>Project Showcase</h1>
+                        <h1 className='font-link' style={{paddingBottom: '30px', paddingTop: '30px'}}>Project Showcase</h1>
                     </div>
                     <Carousel variant="dark">
                         <Carousel.Item>
@@ -161,7 +177,7 @@ function GuestPage() {
             <div>
                 <div className='text-center justify-content-center' style={{paddingTop: '30px'}}>
                     <div>
-                        <h1>Meet the Team</h1>
+                        <h1 className='font-link'>Meet the Team</h1>
                     </div>
                     <Container fluid="md">
                         <Row>
@@ -171,7 +187,7 @@ function GuestPage() {
                                     <Card.Body>
                                         <Card.Title>Colin Boisvert</Card.Title>
                                         <Card.Text>
-                                        Major: <br/>
+                                        Major: CE & CS<br/>
                                         Year: 4th
                                         </Card.Text>
                                     </Card.Body>
@@ -207,7 +223,7 @@ function GuestPage() {
                                     <Card.Body>
                                         <Card.Title>James Packard</Card.Title>
                                         <Card.Text>
-                                        Major:<br/>
+                                        Major: CE & CS<br/>
                                         Year: 4th
                                         </Card.Text>
                                     </Card.Body>
