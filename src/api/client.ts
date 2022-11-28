@@ -17,7 +17,7 @@ export class WebClient implements Client {
 
   private readonly socket: WebSocket;
   private readonly modes: Map<string|undefined, Mode>;
-  private readonly cleanup: () => void;
+  private readonly cleanupFns: Set<() => void>;
   public readonly layout: ObservableValue<Layout,[]>;
   public readonly currentMode: ObservableValue<ModeType, undefined>
 
@@ -32,13 +32,19 @@ export class WebClient implements Client {
     this.currentMode = new ObservableValue(undefined, modeSubject);
     const messageHandler = (message: MessageEvent<string>) => this.onMessage(message);
     this.socket.addEventListener('message', messageHandler);
-    this.cleanup = () => {
-      unsubscribeMode();
-      unsubscribeLayout();
-      this.layout.stop();
-      this.currentMode.stop();
-      this.socket.removeEventListener('message', messageHandler);
+    const openHandler = () => {
+      const interval = setInterval(() => this.channel<void>('ping').send(), 5_000);
+      this.cleanupFns.add(() => clearInterval(interval));
     }
+    this.socket.addEventListener('open', openHandler);
+    this.cleanupFns = new Set([
+      unsubscribeMode,
+      unsubscribeLayout,
+      () => this.layout.stop(),
+      () => this.currentMode.stop(),
+      () => this.socket.removeEventListener('message', messageHandler),
+      () => this.socket.removeEventListener('open', openHandler),
+    ]);
   }
 
   private onMessage(msg: MessageEvent<string>) {
@@ -66,7 +72,7 @@ export class WebClient implements Client {
 
   stop() {
     this.modes.clear();
-    this.cleanup();
+    this.cleanupFns.forEach(fn => fn());
   }
 
   channel<T>(name: string): Channel<T> {
