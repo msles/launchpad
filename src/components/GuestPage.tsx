@@ -7,6 +7,8 @@ import battery from './images/msles battery.jpg'
 import pacman from './images/msles pacman.jpg'
 import dummyImg from './images/dummyImg.jpg'
 import arch2 from './images/msles arch2.png'
+import layoutImg from './images/msles layout.jpg'
+import pongImg from './images/msles pong2.jpg'
 
 function GuestPage() {
     return (
@@ -132,15 +134,16 @@ function GuestPage() {
                 </div>
             </div> 
             <div>
-                <div className='border-bottom text-center justify-content-center lg' style={{paddingTop: '30px', paddingBottom: '30px'}}>
+                <div className='border-bottom text-center justify-content-center lg' style={{paddingTop: '30px', paddingBottom: '30px', height: '78vh'}}>
                     <div>
                         <h1 className='font-link' style={{paddingBottom: '30px', paddingTop: '30px'}}>Project Showcase</h1>
                     </div>
                     <Carousel variant="dark">
                         <Carousel.Item>
                             <Image
-                            className="justify-content-center w-50"
-                            rounded={true} 
+                            className="justify-content-center Image-carousel"
+                            style={{width: '60vh'}}
+                            rounded={true}
                             src={pacman}
                             alt="First slide"
                             />
@@ -150,9 +153,10 @@ function GuestPage() {
                         </Carousel.Item>
                         <Carousel.Item>
                             <Image
-                            className="justify-content-center w-50"
+                            className="justify-content-center Image-carousel"
+                            style={{width: '55vh'}}
                             rounded={true} 
-                            src={pacman}
+                            src={layoutImg}
                             alt="Second slide"
                             />
 
@@ -162,9 +166,10 @@ function GuestPage() {
                         </Carousel.Item>
                         <Carousel.Item>
                             <Image
-                            className="justify-content-center w-50"
+                            className="justify-content-center Image-carousel"
+                            style={{width: '45vh'}}
                             rounded={true} 
-                            src={pacman}
+                            src={pongImg}
                             alt="Third slide"
                             />
                             <Carousel.Caption>
