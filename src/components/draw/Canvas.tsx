@@ -1,5 +1,6 @@
 import React, { forwardRef, useCallback, useState } from "react";
 import { Position } from "../../api/layout";
+import styles from "./css/Canvas.module.css";
 
 type DrawCanvasProps = {
   width: number, height: number
@@ -34,7 +35,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, DrawCanvasProps>((props, ref
     if (!isPainting) return;
     return onPaint(toCanvasCoordinates(event));
   }, [isPainting, onPaint, toCanvasCoordinates]);
-  return <canvas ref={ref} width={width} height={height}
+  return <canvas ref={ref} className={styles.canvas} width={width} height={height}
     style={{width: canvasWidth, height: canvasHeight}}
     onPointerDown={onPointerDown}
     onPointerUp={onPointerUp}
