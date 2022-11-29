@@ -1,7 +1,6 @@
 import {BsGridFill, BsGithub, BsPencilSquare, BsDot} from 'react-icons/bs'
 import {TbMinusVertical} from 'react-icons/tb'
 import { Button, Card, Col, Container, Row, Image, Stack, Carousel } from 'react-bootstrap';
-import architecture from './images/msles architecture.png'
 import pipeline from './images/msles pipeline.png'
 import backside from './images/msles backside.jpg'
 import battery from './images/msles battery.jpg'
