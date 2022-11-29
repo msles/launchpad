@@ -17,7 +17,7 @@ function GuestPage() {
                 <div className='border-bottom text-center d-flex align-items-center justify-content-center' style={{height: '50vh'}}>
                     <div>
                         <h1 className='font-link'>M.S.L.E.S 🚀</h1>
-                        <h5>The Multi-Screen LED Entertainment System Project</h5>
+                        <h5 >The Multi-Screen LED Entertainment System Project</h5>
                         <Button variant="dark" href='https://github.com/msles' target="_blank" rel="noreferrer"><BsGithub />  Source Code</Button>
                     </div>
                 </div>
@@ -36,7 +36,7 @@ function GuestPage() {
                                         <BsGridFill size={30}/>
                                         <Card.Title as="h2">Layout</Card.Title>
                                         <Card.Text>
-                                            Change the layout of the LED board anytime
+                                            Change the layout of the LED boards anytime
                                         </Card.Text>
                                     </Card.Body>
                                 </Card>
@@ -92,7 +92,7 @@ function GuestPage() {
                                 <Col md={{ span: 6, order: 'last' }}>
                                     <h3 style={{padding: '20px', textDecoration: 'underline'}}>Pipeline</h3>
                                     <p>
-                                    Once the devices are powered on and connected to the control server, they will get a default layout of being placed horizontally. The active mode is one of two: draw or pong, and while it has a active mode it will start rendering any actions the user is performing. For example, in draw mode, it will render the pixels the user is drwaing on the webapp. The rendering is produced using the node-pixel-pusher protocol which helps with decoding frames to write to the LED boards.
+                                    Once the devices are powered on and connected to the control server, they will get a default layout of being placed horizontally. The active mode is one of two: draw or pong, and while it has a active mode it will start rendering any actions the user is performing. For example, in draw mode, it will render the pixels the user is drawing on the webapp. The rendering is produced using the node-pixel-pusher protocol which helps with decoding frames to write to the LED boards.
                                     </p>
                                 </Col>
                                 <Col md={{ span: 6, order: 'first' }}>
@@ -103,9 +103,10 @@ function GuestPage() {
                         <Container style={{padding: '20px'}} className='border-bottom'>
                             <Row className="justify-content-md-center">
                                 <Col md>
-                                    <h3 style={{padding: '20px', textDecoration: 'underline'}}>LED Board and Raspberry Pi</h3>
+                                    <h3 style={{padding: '20px', textDecoration: 'underline'}}>LED Board & Raspberry Pi</h3>
                                     <p>
-                                        ....
+                                        For the purpose of the demo we bought four 64x64 RGB LED matrix panels by Adafruit and 4 Raspberry Pis. The concept of our project allows an unlimited number of LED boards to connect with each other via the control server. The Raspberry Pi is the computer to receive the information through the control server and display to the boards. <br/>
+                                        Since the Raspberry Pi is a tiny computer connected to the web, we needed an easy way to first connected to the wifi. We proposed the idea of NFC, which with a single tap, we could have send the wifi configurations of one Pi to the other. This concept is possible but we didn&apos;t have time to implement it.
                                     </p>
                                 </Col>
                                 <Col md>
