@@ -9,6 +9,11 @@ import dummyImg from './images/dummyImg.jpg'
 import arch2 from './images/msles arch2.png'
 import layoutImg from './images/msles layout.jpg'
 import pongImg from './images/msles pong2.jpg'
+import owen from './images/owen.jpg'
+import james from './images/james.jpg'
+import colin from './images/colin.jpg'
+import sean from './images/sean.jpg'
+import will from './images/will.jpg'
 
 function GuestPage() {
     return (
@@ -188,11 +193,11 @@ function GuestPage() {
                         <Row>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
+                                    <Card.Img variant="top" src={colin} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>Colin Boisvert</Card.Title>
                                         <Card.Text>
-                                        Major: CE & CS<br/>
+                                        Major: CE<br/>
                                         Year: 4th
                                         </Card.Text>
                                     </Card.Body>
@@ -200,7 +205,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
+                                    <Card.Img variant="top" src={will} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>William Hsia</Card.Title>
                                         <Card.Text>
@@ -212,7 +217,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
+                                    <Card.Img variant="top" src={sean} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>Sean Magee</Card.Title>
                                         <Card.Text>
@@ -224,7 +229,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
+                                    <Card.Img variant="top" src={james} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>James Packard</Card.Title>
                                         <Card.Text>
@@ -236,7 +241,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
+                                    <Card.Img variant="top" src={owen} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>Owen Zhang</Card.Title>
                                         <Card.Text>
