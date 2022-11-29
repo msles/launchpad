@@ -3,10 +3,10 @@ import {TbMinusVertical} from 'react-icons/tb'
 import { Button, Card, Col, Container, Row, Image, Stack, Carousel } from 'react-bootstrap';
 import architecture from './images/msles architecture.png'
 import pipeline from './images/msles pipeline.png'
-import backside from './images/msles backside.png'
-import battery from './images/msles battery.png'
-import pacman from './images/msles pacman.png'
-import dummyImg from './images/dummyImg.png'
+import backside from './images/msles backside.jpg'
+import battery from './images/msles battery.jpg'
+import pacman from './images/msles pacman.jpg'
+import dummyImg from './images/dummyImg.jpg'
 import arch2 from './images/msles arch2.png'
 
 function GuestPage() {
@@ -109,7 +109,7 @@ function GuestPage() {
                                     </p>
                                 </Col>
                                 <Col md>
-                                    <Image rounded={true} src={backside} fluid={true} style={{width:'60vh'}}></Image>
+                                    <Image rounded={true} src={backside} loading="lazy" fluid={true} style={{width:'60vh'}}></Image>
                                 </Col>
                             </Row>
                         </Container>
@@ -124,7 +124,7 @@ function GuestPage() {
                                     </p>
                                 </Col>
                                 <Col md={{ span: 6, order: 'first' }}>
-                                    <Image rounded={true} src={battery} fluid={true} style={{width:'50vh'}}></Image>
+                                    <Image rounded={true} src={battery} loading="lazy" fluid={true} style={{width:'50vh'}}></Image>
                                 </Col>
                             </Row>
                         </Container>
@@ -183,7 +183,7 @@ function GuestPage() {
                         <Row>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} />
+                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>Colin Boisvert</Card.Title>
                                         <Card.Text>
@@ -195,7 +195,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} />
+                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>William Hsia</Card.Title>
                                         <Card.Text>
@@ -207,7 +207,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} />
+                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>Sean Magee</Card.Title>
                                         <Card.Text>
@@ -219,7 +219,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} />
+                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>James Packard</Card.Title>
                                         <Card.Text>
@@ -231,7 +231,7 @@ function GuestPage() {
                             </Col>
                             <Col className='d-flex justify-content-center'>
                                 <Card style={{ width: '15rem' }}>
-                                    <Card.Img variant="top" src={dummyImg} />
+                                    <Card.Img variant="top" src={dummyImg} loading="lazy"/>
                                     <Card.Body>
                                         <Card.Title>Owen Zhang</Card.Title>
                                         <Card.Text>
